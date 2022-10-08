@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">   
+    
+    <head>
+
+        <meta charset="UTF-8">
+        <title>Tic Tac Toe</title>
+        <meta lang="en">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, shrink-to-fit=no, viewport-fit=cover">
+        <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+        <link rel="icon" type="image/png" sizes="256x256" href="favicon.png"/>
+        <meta name="theme-color" content="#000000"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500&display=swap" rel="stylesheet">
+        <meta property="og:title" content="Tic Tac Toe"/>
+        <meta property="og:description" content="Tic Tac Toe game">
+        <meta property="twitter:title" content="Tic Tac Toe"/>
+        <meta property="twitter:description" content="Tic Tac Toe game">
+
+    </head>
+
+    <style>
+
+        :root {
+
+            --accent-color: rgb(40, 40, 40);
+            --background-color: white;
+            --text-color: black;
+            --cellSize: 35px;
+            --cell-border-size: 5px;
+            --cell-border-color: rgb(78, 113, 152);
+            --display-cell-index: none;
+
+        }
+
+        body {
+            overflow-x: hidden;
+            background-color: var(--background-color);
+            text-align: center;
+            font-family: 'Exo 2', Arial;
+            overscroll-behavior: contain;
+        }
+
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            background-color: var(--accent-color);
+            border-radius: 9px;
+            border: none;
+            text-transform: uppercase;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            transition: transform 60ms cubic-bezier(0.7, 0, 0.3, 1), outline 60ms cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        button:hover, input[type=checkbox]:hover {
+            filter: brightness(1.2);
+        }
+
+        button:active, input[type=checkbox]:active {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        hr {
+            opacity: 0.7;
+            margin: 5px 0;
+            border: none;
+            height: 3px;
+            background-color: var(--text-color);
+        }
+
+        input[type=checkbox] {
+            cursor: pointer;
+            border-radius: 9px;
+            width: 25px;
+            height: 25px;
+            transition: outline 60ms cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        [id^=row] {
+            display: flex;
+        }
+
+        [id$=-fab] {
+            position: fixed;
+            padding: 12px;
+            box-shadow: 5px 5px 8px 0px rgba(0,0,0,0.5);
+        }
+
+        .center-flex {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cell {
+            position: relative;
+            flex-shrink: 0;
+            width: var(--cellSize);
+            height: var(--cellSize);
+            margin: calc(var(--cell-border-size)/2);
+            flex-direction: column;
+            background-color: white;
+        }
+
+        .cell-index {
+            display: var(--display-cell-index);
+            position: absolute;
+            font-size: 9px;
+            left: 0;
+            top: 0;
+        }
+
+        .expand-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .expand-head-container {
+            user-select: none;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .expand-head-container:hover {
+            filter: brightness(0.8);
+        }
+
+        .expand-title, .expand-svg {
+            vertical-align: middles;
+            margin: 10px;
+        }
+
+        .expand-svg {
+            transition: transform 200ms cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        .expand-animator {
+            height: 0;
+            overflow: hidden;
+            transition: opacity 200ms linear, height 200ms cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        .expand-content {
+            padding: 5px 0 5px 0;
+        }
+
+        .option-toggle-container {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px 15px 30px;
+        }
+
+        .option-toggle-title {
+            padding-right: 10px;
+        }
+
+        .option-toggle-toggle {
+            vertical-align: middle;
+            flex-shrink: 0;
+            width: 45px;
+        }
+
+        .secondary-hr {
+            opacity: 0.4;
+            width: 90%;
+        }
+
+        #play-grid {
+            background-color: var(--cell-border-color);
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            user-select: none;
+        }
+
+        #menu-fab {
+            left: 25px;
+            z-index: 3;
+        }
+
+        #dimmer {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            opacity: 0;
+            transition: opacity 300ms linear;
+        }
+
+        #menu {
+            padding: 10px;
+            overflow-y: auto;
+            border-radius: 9px 9px 0 0;
+            z-index: 2;
+            background-color: var(--background-color);
+            position: fixed;
+            height: calc(100% + 9px);
+            margin: auto;
+            transition: transform 300ms cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+    </style>
+
+    <body>
+
+        <div id="play-grid"></div>
+
+        <button type="button" id="menu-fab" title="open menu" onclick="menu.open();">
+            <svg id="menu-fab-open-svg" style="transition: opacity 150ms linear;" xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill=var(--background-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            <svg style="display: none; opacity: 0; transition: opacity 150ms linear;" id="menu-fab-close-svg" xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill=var(--background-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+        <div id="dimmer" onclick="menu.open();"></div>
+        <div id="menu">
+            <div id="top-menu-fab-placeholder" style="height: 111px;"></div>
+            <h1 style="display: flex; align-items: center;"><svg version="1.1" viewBox="0.0 0.0 256.0 256.0" width="50px" height="50px" style="padding: 0 15px;" fill="none" stroke="none" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><clipPath id="p.0"><path d="m0 0l256.0 0l0 256.0l-256.0 0l0 -256.0z" clip-rule="nonzero"/></clipPath><g clip-path="url(#p.0)"><path fill="#000000" fill-opacity="0.0" d="m0 0l256.0 0l0 256.0l-256.0 0z" fill-rule="evenodd"/><path fill="#cc0000" d="m111.21967 96.00541l127.9685 127.9685l-15.212601 15.212601l-127.9685 -127.968506z" fill-rule="evenodd"/><path stroke="#cc0000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m111.21967 96.00541l127.9685 127.9685l-15.212601 15.212601l-127.9685 -127.968506z" fill-rule="evenodd"/><path fill="#6aa84f" d="m45.47591 104.87351l0 0c0 -32.389114 26.256557 -58.64567 58.645664 -58.64567l0 0c15.5538025 0 30.470558 6.1787224 41.468758 17.176918c10.998199 10.998196 17.17691 25.914951 17.17691 41.468754l0 0c0 32.389107 -26.256561 58.645668 -58.645668 58.645668l0 0c-32.389107 0 -58.645664 -26.256561 -58.645664 -58.645668zm18.874523 0l0 0c0 21.964996 17.806145 39.77114 39.77114 39.77114c21.965004 0 39.771156 -17.806145 39.771156 -39.77114l0 0c0 -21.965004 -17.806152 -39.77115 -39.771156 -39.77115l0 0c-21.964996 0 -39.77114 17.806145 -39.77114 39.77115z" fill-rule="evenodd"/><path stroke="#6aa84f" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m45.47591 104.87351l0 0c0 -32.389114 26.256557 -58.64567 58.645664 -58.64567l0 0c15.5538025 0 30.470558 6.1787224 41.468758 17.176918c10.998199 10.998196 17.17691 25.914951 17.17691 41.468754l0 0c0 32.389107 -26.256561 58.645668 -58.645668 58.645668l0 0c-32.389107 0 -58.645664 -26.256561 -58.645664 -58.645668zm18.874523 0l0 0c0 21.964996 17.806145 39.77114 39.77114 39.77114c21.965004 0 39.771156 -17.806145 39.771156 -39.77114l0 0c0 -21.965004 -17.806152 -39.77115 -39.771156 -39.77115l0 0c-21.964996 0 -39.77114 17.806145 -39.77114 39.77115z" fill-rule="evenodd"/><path fill="#cc0000" d="m239.18637 105.803665l-133.35434 133.35432l-15.181099 -15.181091l133.35434 -133.35434z" fill-rule="evenodd"/><path stroke="#cc0000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m239.18637 105.803665l-133.35434 133.35432l-15.181099 -15.181091l133.35434 -133.35434z" fill-rule="evenodd"/><path fill="#cc0000" d="m63.73516 48.522312l62.992126 62.992123l-15.212601 15.212601l-62.992126 -62.992126z" fill-rule="evenodd"/><path stroke="#cc0000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m63.73516 48.522312l62.992126 62.992123l-15.212601 15.212601l-62.992126 -62.992126z" fill-rule="evenodd"/><path fill="#cc0000" d="m48.71654 64.05639l-24.236221 -39.574802l39.574802 24.236221z" fill-rule="evenodd"/><path stroke="#cc0000" stroke-width="1.0" stroke-linejoin="round" stroke-linecap="butt" d="m48.71654 64.05639l-24.236221 -39.574802l39.574802 24.236221z" fill-rule="evenodd"/></g></svg><span>Tic Tac Toe</span></h1>
+
+            <hr>
+            <div id="expand-info" class="expand-container">
+                <div class="expand-head-container" onclick="expandPart('info');">
+                    <svg id="expand-info-svg" class="expand-svg" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M24 24H0V0h24v24z" fill="none" opacity=".87"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6-1.41-1.41z"/></svg>
+                    <h2 class="expand-title">About game</h2>
+                    <svg class="expand-svg" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                </div>
+                <div id="expand-info-animator" class="expand-animator">
+                    <div class="expand-content" style="text-align: left;" id="expand-info-content">
+
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            <div id="expand-rules" class="expand-container">
+                <div class="expand-head-container" onclick="expandPart('rules');">
+                    <svg id="expand-rules-svg" class="expand-svg" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M24 24H0V0h24v24z" fill="none" opacity=".87"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6-1.41-1.41z"/></svg>
+                    <h2 class="expand-title">Rules</h2>
+                    <svg class="expand-svg" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+                </div>
+                <div id="expand-rules-animator" class="expand-animator">
+                    <div id="expand-rules-content">
+
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            <div id="expand-players" class="expand-container">
+                <div class="expand-head-container" onclick="expandPart('players');">
+                    <svg id="expand-players-svg" class="expand-svg" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M24 24H0V0h24v24z" fill="none" opacity=".87"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6-1.41-1.41z"/></svg>
+                    <h2 class="expand-title">Players</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M9 13.75c-2.34 0-7 1.17-7 3.5V19h14v-1.75c0-2.33-4.66-3.5-7-3.5zM4.34 17c.84-.58 2.87-1.25 4.66-1.25s3.82.67 4.66 1.25H4.34zM9 12c1.93 0 3.5-1.57 3.5-3.5S10.93 5 9 5 5.5 6.57 5.5 8.5 7.07 12 9 12zm0-5c.83 0 1.5.67 1.5 1.5S9.83 10 9 10s-1.5-.67-1.5-1.5S8.17 7 9 7zm7.04 6.81c1.16.84 1.96 1.96 1.96 3.44V19h4v-1.75c0-2.02-3.5-3.17-5.96-3.44zM15 12c1.93 0 3.5-1.57 3.5-3.5S16.93 5 15 5c-.54 0-1.04.13-1.5.35.63.89 1 1.98 1 3.15s-.37 2.26-1 3.15c.46.22.96.35 1.5.35z"/></svg>
+                </div>
+                <div id="expand-players-animator" class="expand-animator">
+                    <div id="expand-players-content">
+
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            <div id="expand-debug" class="expand-container">
+                <div class="expand-head-container" onclick="expandPart('debug');">
+                    <svg id="expand-debug-svg" class="expand-svg" xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M24 24H0V0h24v24z" fill="none" opacity=".87"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6-1.41-1.41z"/></svg>
+                    <h2 class="expand-title">Debug & advanced</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5s-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-4 4v3c0 .22-.03.47-.07.7l-.1.65-.37.65c-.72 1.24-2.04 2-3.46 2s-2.74-.77-3.46-2l-.37-.64-.1-.65C8.03 15.48 8 15.23 8 15v-4c0-.23.03-.48.07-.7l.1-.65.37-.65c.3-.52.72-.97 1.21-1.31l.57-.39.74-.18c.31-.08.63-.12.94-.12.32 0 .63.04.95.12l.68.16.61.42c.5.34.91.78 1.21 1.31l.38.65.1.65c.04.22.07.47.07.69v1zm-6 2h4v2h-4zm0-4h4v2h-4z"/></svg>
+                </div>
+                <div id="expand-debug-animator" class="expand-animator">
+                    <div id="expand-debug-content">
+                        <hr class="secondary-hr">
+                        <div class="option-toggle-container">
+                            <div class="option-toggle-title center-flex">
+                                Show cell indexes
+                            </div>
+                            <div class="option-toggle-toggle center-flex">
+                                <input type="checkbox" class="option-toggle-checkbox" id="show-cell-indexes-checkbox" onclick="saveConfiguration();">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            <div id="bottom-menu-fab-placeholder" style="height: 111px;"></div>
+        </div>
+
+    </body>
+
+    <script type="text/javascript">
+
+        navigator.touchscreen = matchMedia("(pointer: coarse)").matches;
+        cssVariables = document.querySelector(":root");
+        expanded = {};
+        playGrid = document.getElementById("play-grid");
+        playGridZoom = 1;
+        playGridDrag = false;
+        configuration = {rules: {cellSizePx: 35, cellBorderSizePx: 5, gridRows: 40, gridColumns: 40}, debug: {showCellIndexes: false}};
+        if (!navigator.touchscreen) {
+            playGrid.style.overflow = "hidden";
+        }
+        menu = {opened: false, style: null, open() {
+            dimmer = document.getElementById("dimmer");
+            menuElement = document.getElementById("menu");
+            openSvg = document.getElementById("menu-fab-open-svg");
+            closeSvg = document.getElementById("menu-fab-close-svg");
+            if (this.opened) {
+                menuElement.style.removeProperty("transform")
+                closeSvg.style.opacity = 0;
+                setTimeout(function() {
+                    closeSvg.style.display = "none";
+                    openSvg.style.display = "block";
+                    setTimeout(function() {
+                        openSvg.style.opacity = 1;
+                    }, 10);
+                }, 160);
+                dimmer.style.opacity = 0;
+                setTimeout(function() {
+                    dimmer.style.display = "none";
+                }, 310);
+                this.opened = false;
+            } else {
+                dimmer.style.display = "block";
+                setTimeout(function() {
+                    dimmer.style.opacity = 1;
+                }, 10);
+                if (this.style == "bottom") {
+                    menuElement.style.transform = "translateY(calc(-100% + 9px))";
+                } else {
+                    menuElement.style.transform = "translateX(420px)";
+                }
+                openSvg.style.opacity = 0;
+                setTimeout(function() {
+                    openSvg.style.display = "none";
+                    closeSvg.style.display = "block";
+                    setTimeout(function() {
+                        closeSvg.style.opacity = 1;
+                    }, 10);
+                }, 160);
+                setTimeout(function() {
+                }, 300);
+                this.opened = true;
+            }
+        }, updateStyle() {
+            menuFab = document.getElementById("menu-fab");
+            menuElement = document.getElementById("menu");
+            menuForceClosed = false;
+            if (innerWidth > innerHeight && innerWidth > 450 && this.style != "side") {
+                menuFab.style.bottom = "";
+                menuFab.style.top = "25px";
+                if (this.opened) {
+                    this.open();
+                    menuForceClosed = true;
+                }
+                menuElement.style.top = "0";
+                menuElement.style.bottom = "0";
+                menuElement.style.left = "-420px";
+                menuElement.style.removeProperty("right");
+                menuElement.style.width = "400px";
+                menuElement.style.height = "100%";
+                menuElement.style.borderRadius = "0";
+                document.getElementById("bottom-menu-fab-placeholder").style.display = "none";
+                document.getElementById("top-menu-fab-placeholder").style.height = "111px";
+                this.style = "side";
+            } else if ((innerWidth <= innerHeight || innerWidth <= 450) && this.style != "bottom") {
+                menuFab.style.removeProperty("top");
+                menuFab.style.bottom = "25px";
+                if (this.opened) {
+                    this.open();
+                    menuForceClosed = true;
+                }
+                menuElement.style.left = "0";
+                menuElement.style.right = "0";
+                menuElement.style.top = "100%";
+                menuElement.style.removeProperty("bottom");
+                menuElement.style.removeProperty("width");
+                menuElement.style.height = "calc(100% + 9px)";
+                menuElement.style.removeProperty("border-radius");
+                document.getElementById("bottom-menu-fab-placeholder").style.display = "block";
+                document.getElementById("top-menu-fab-placeholder").style.height = "85px";
+                this.style = "bottom";
+            }
+            if (menuForceClosed) {
+                setTimeout(function() {
+                    menu.open();
+                }, 310);
+            }
+        }};
+        addEventListener("resize", function() {
+            menu.updateStyle()
+        });
+        addEventListener("keyup", function() {
+            switch (event.key) {
+                case "ArrowRight":
+                case "d":
+                    playGrid.scrollLeft = playGrid.scrollLeft+(configuration.rules.cellSizePx+configuration.rules.cellBorderSizePx);
+                    console.log("moving play grid right");
+                    break;
+                case "ArrowUp":
+                case "w":
+                    playGrid.scrollTop = playGrid.scrollTop-(configuration.rules.cellSizePx+configuration.rules.cellBorderSizePx);
+                    console.log("moving play grid up");
+                    break;
+                case "ArrowLeft":
+                case "a":
+                    playGrid.scrollLeft = playGrid.scrollLeft-(configuration.rules.cellSizePx+configuration.rules.cellBorderSizePx);
+                    console.log("moving play grid left");
+                    break;
+                case "ArrowDown":
+                case "s":
+                    playGrid.scrollTop = playGrid.scrollTop+(configuration.rules.cellSizePx+configuration.rules.cellBorderSizePx);
+                    console.log("moving play grid down");
+                    break;
+                default:
+                    break;
+            }
+        });
+        if (!navigator.touchscreen) {
+            console.log("setting drag listeners");
+            ["mousedown","touchstart"].forEach( function(event) {
+                playGrid.addEventListener(event, function(mouse) {
+                    globalThis.scrollPositions = {top: playGrid.scrollTop, left: playGrid.scrollLeft, y: mouse.clientY, x: mouse.clientX}
+                    playGridDrag = true;
+                    console.log("play grid drag start");
+                });
+            });
+            ["mousemove"].forEach( function(event) {
+                playGrid.addEventListener(event, function(mouse) {
+                    if (playGridDrag) {
+                        if (playGrid.style.cursor != "grabbing") {
+                            playGrid.style.cursor = "grabbing";
+                        }
+                        playGrid.scrollTop = scrollPositions.top - (mouse.clientY - scrollPositions.y);
+                        playGrid.scrollLeft = scrollPositions.left - (mouse.clientX - scrollPositions.x);
+                    }
+                });
+            });
+            ["mouseup"].forEach( function(event) {
+                document.addEventListener(event, handlePlayGridGrabEnd);
+            });
+            playGrid.addEventListener("wheel", function(wheel) {
+                wheel.preventDefault();
+                playGridZoom = Math.max(Math.min(playGridZoom-wheel.deltaY*0.001, 2), 1);
+                console.log(`zoomed on play grid ${playGridZoom} times`);
+                playGrid.style.transform = `scale(${playGridZoom})`;
+            }, {passive: false});
+        }
+        menu.updateStyle();
+        generateBaseGrid();
+
+        function saveConfiguration() {
+            configuration.debug.showCellIndexes = document.getElementById("show-cell-indexes-checkbox").checked
+            applyConfiguration(true)
+        }
+
+        function applyConfiguration(quick) {
+            if (quick) {
+                if (configuration.debug.showCellIndexes) {
+                    cssVariables.style.setProperty("--display-cell-index", "block");
+                } else {
+                    cssVariables.style.setProperty("--display-cell-index", "none");
+                }
+            }
+        }
+
+        function handlePlayGridGrabEnd() {
+            if (playGridDrag) {
+                playGridDrag = false;
+                console.log("play grid drag end");
+                playGrid.style.removeProperty("cursor");
+            }
+        }
+
+        function expandPart(expanderId) {
+            expandContent = document.getElementById(`expand-${expanderId}-content`);
+            if (typeof expanded[expanderId] == "undefined") {
+                expanded[expanderId] = false;
+            }
+            if (!expanded[expanderId]) {
+                expanded[expanderId] = true;
+                document.getElementById(`expand-${expanderId}-svg`).style.transform = "rotate(0.5turn)";
+                document.getElementById(`expand-${expanderId}-animator`).style.height = (getComputedStyle(expandContent).height.replace("px", "")*1)+5 + "px";
+            } else {
+                expanded[expanderId] = false;
+                document.getElementById(`expand-${expanderId}-svg`).style.transform = "";
+                document.getElementById(`expand-${expanderId}-animator`).style.height = "";
+            }
+        }
+
+        function generateBaseGrid() {
+            columnsNumber = configuration.rules.gridColumns;
+            rowsNumber = configuration.rules.gridRows;
+            console.log(`generating base grid with ${rowsNumber} rows and ${columnsNumber} columns`);
+            for (row = 0; row<rowsNumber; row++) {
+                rowElement = document.createElement("div");
+                rowElement.id = `row-${row}`
+                playGrid.appendChild(rowElement);
+                for (column = 0; column<columnsNumber; column++) {
+                    cellElement = document.createElement("div");
+                    cellElement.id = `cell-${row}-${column}`;
+                    cellElement.setAttribute("class", "cell center-flex");
+                    rowElement.appendChild(cellElement);
+                    cellElement.innerHTML = `<div class="cell-index">${row}, ${column}</div>`;
+                }
+            }
+            playGrid.scrollTop = (configuration.rules.gridColumns*(configuration.rules.cellSizePx+configuration.rules.cellBorderSizePx))/2 - innerHeight/2;
+            playGrid.scrollLeft = (configuration.rules.gridRows*(configuration.rules.cellSizePx+configuration.rules.cellBorderSizePx))/2 - innerWidth/2;
+        }
+
+    </script>
+
+</html>
