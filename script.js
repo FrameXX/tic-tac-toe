@@ -248,7 +248,7 @@ class Cell {
     }
 
     cancelHighlight() {
-        this.element.style.backgroundColor = "var(--cell-color)";
+        this.element.style.backgroundColor = "";
         this.element.style.animation = "";
     }
 
@@ -264,8 +264,9 @@ function stringToHTML(str) {
 }
 
 // initiate global objects
+const soundEffects = {placeSymbol: new Howl({ src: ["audio/place-symbol.ogg"] }), removeSymbol: new Howl({ src: ["audio/remove-symbol.ogg"] })};
 navigator.touchscreen = matchMedia("(pointer: coarse)").matches;
-maxLogDepth = 3;
+maxLogDepth = 0;
 cssVariables = document.querySelector(":root");
 expanded = {players: false};
 menuOpened = false;
@@ -371,7 +372,7 @@ function updateOptionRangeValuePair(pair, origin) {
     updateData();
 }
 
-optionCheckboxes = [{optionDOM: "show-cell-indexes", optionJS: "showCellIndexes", disablesOptions: {}, player: null}, {optionDOM: "auto-grid-sizes", optionJS: "autoGridSizes", disablesOptions: {options: "grid-sizes", onValue: true}, player: null}, {optionDOM: "rotate-grid", optionJS: "rotateGrid", disablesOptions: {}, player: null}];
+optionCheckboxes = [{optionDOM: "show-cell-indexes", optionJS: "showCellIndexes", disablesOptions: {}, player: null}, {optionDOM: "auto-grid-sizes", optionJS: "autoGridSizes", disablesOptions: {options: "grid-sizes", onValue: true}, player: null}, {optionDOM: "rotate-grid", optionJS: "rotateGrid", disablesOptions: {}, player: null}, {optionDOM: "sound-effects", optionJS: "soundEffects", disablesOptions: {}, player: null}];
 assignCheckboxListeners(optionCheckboxes);
 
 function assignCheckboxListeners(checkboxes) {
@@ -585,7 +586,6 @@ function turn() {
         setTimeout(function(fromGame) {
             if (fromGame.id == game.id) {
                 let chosenCell = moves[getRandomNumber(0, Math.round((moves.length - 1)*(currentPlayer.mistakeRate**4)))].cell;
-                playGrid.style.pointerEvents = "all";
                 nextTurn(chosenCell);
             }
         }.bind(null, structuredClone(game)), getRandomNumber(800, 1600));
@@ -596,6 +596,7 @@ function nextTurn(chosenCell) {
     log("preparing for next turn", 2);
     let currentPlayer = players[game.playing];
     currentPlayer.cancelLastCellHighlight();
+    configuration.soundEffects && soundEffects.placeSymbol.play();
     chosenCell.placeSymbol(game.playing);
     currentPlayer.lastCellCoords = [chosenCell.row, chosenCell.column];
     currentPlayer.highlightLastCell();
@@ -680,11 +681,11 @@ function transitionTurnConfirm(chosenCell) {
 
 function confirmTurn(chosenCell) {
     transitionTurnConfirm();
-    playGrid.style.pointerEvents = "all";
     finalizeTurn(chosenCell);
 }
 
 function cancelTurn(chosenCell) {
+    configuration.soundEffects && soundEffects.removeSymbol.play();
     let currentPlayer = players[game.playing];
     currentPlayer.cancelLastCellHighlight();
     chosenCell.removeSymbol();
@@ -699,6 +700,7 @@ function playerPlaceSymbol(row, column) {
     if (chosenCell.captured != null) {
         showToast("Cell is already captured.", `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill="hsl(var(--hue), var(--top-accent))"><g><rect fill="none" height="24" width="24"/></g><g><g><path d="M7,11v2h10v-2H7z M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8 s3.59-8,8-8s8,3.59,8,8S16.41,20,12,20z"/></g></g></svg>`);
     } else {
+        configuration.soundEffects && soundEffects.placeSymbol.play();
         log("player placed symbol", 2);
         nextTurn(chosenCell);
     }
@@ -756,6 +758,7 @@ function getAllCellPoints(cell, playerId) {
 function getWinCells(cell) {
     log(`getting win symbol from cell ${cell.row}, ${cell.column} for ${game.playing}`, 5);
     let row, column, win = false, winCells = {axis0: [cell], axis45: [cell], axis90: [cell], axis135: [cell]}, currentWinCells;
+
     for (rowAdd = -1; rowAdd <= 1; rowAdd++)  {
         log(`rowAdd: ${rowAdd}`, 5);
 
@@ -792,9 +795,11 @@ function getWinCells(cell) {
                 } else if (cellPoints == 30) {
                     winCells[currentWinCells].push(grid.cells[row][column]);
                 }
-                if (winCells[currentWinCells].length >= configuration.winCombo) {
-                    win = winCells[currentWinCells];
-                    break;
+                if (winCells[currentWinCells].length == configuration.winCombo) {
+                    if (checkCellComboOrder(winCells[currentWinCells])) {
+                        win = winCells[currentWinCells];
+                        break;
+                    }
                 }
             }
         }
@@ -802,9 +807,33 @@ function getWinCells(cell) {
     return win;
 }
 
+function checkCellComboOrder(winCells) {
+    let rows = [], columns = [];
+    const order = Array.from(
+        {length: configuration.winCombo},
+        (_, index) => index + 1
+    );
+    
+    winCells.forEach(cell => {
+        rows.push(cell.row);
+        columns.push(cell.column);
+    });
+    const smallestRow = Math.min(...rows);
+    const smallestColumn = Math.min(...columns);
+    rows = Array.from(rows, row => row - (smallestRow - 1));
+    columns = Array.from(columns, column => column - (smallestColumn - 1));
+    rows.sort();
+    columns.sort();
+    rows = rows.slice(0, 5);
+    columns = columns.slice(0, 5);
+
+    return rows.every((row, index) => row == order[index]) || columns.every((column, index) => column == order[index]);
+}
+
 function getCellPoints(cell, playerId) {
     log(`getting cell points in cell ${cell.row}, ${cell.column} for ${playerId}`, 5);
     let points = 0, multipliers = {axis0: 1, axis45: 1, axis90: 1, axis135: 1}, row, column, inferiority, currentAxis, cellPoints, addPoints;
+
     if (cell.captured != null) {
         throw new Error("Cannot get cell points of already captured cell.")
     } else {
@@ -852,13 +881,13 @@ function getCellPoints(cell, playerId) {
 
 function getAxis(rowAdd, columnAdd) {
     let axis;
-    if (rowAdd == 0 && (columnAdd > 0 || columnAdd < 0)) {
+    if (rowAdd == 0 && columnAdd != 0) {
         axis = 0;
-    } else if ((rowAdd > 0 && columnAdd < 0) || (rowAdd < 0 && columnAdd > 0)) {
+    } else if (rowAdd*columnAdd < 0) {
         axis = 45;
-    } else if (columnAdd == 0 && (rowAdd > 0 || rowAdd < 0)) {
+    } else if (columnAdd == 0 && rowAdd != 0) {
         axis = 90;
-    } else if ((rowAdd < 0 && columnAdd < 0) || (rowAdd > 0 && columnAdd > 0)) {
+    } else if (rowAdd*columnAdd > 0) {
         axis = 135;
     }
     return axis;
@@ -899,7 +928,7 @@ function clearStorage() {
 }
 
 function resetStorage() {
-    configuration = {gridRows: 25, gridColumns: 15, borderPart: 0.20, showCellIndexes: false, optimalCellSize: 30 , autoGridSizes: true, winCombo: 5, rotateGrid: true, theme: "auto", confirmTurn: "touchscreen", playedGames: {}};
+    configuration = {gridRows: 25, gridColumns: 15, borderPart: 0.20, showCellIndexes: false, optimalCellSize: 30 , autoGridSizes: true, winCombo: 5, rotateGrid: true, theme: "auto", confirmTurn: "touchscreen", playedGames: {}, soundEffects: true};
     window[storage].setItem("configuration", JSON.stringify(configuration));
 }
 

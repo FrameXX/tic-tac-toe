@@ -164,7 +164,7 @@
                         fill-rule="evenodd" />
                 </g>
             </svg>
-            <span>Tic Tac Toe v0.2.0</span>
+            <span>Tic Tac Toe v0.3.0</span>
         </h1>
         <hr>
 
@@ -195,6 +195,17 @@
                 <!-- category content -->
                 <div style="text-align: left;" id="expand-info-content">
                     <hr>
+
+                    <div style="padding: 10px;">
+                        <p>
+                            This is a Tic Tac Toe game as everyone knows it with a bit of customisation. You can set your own number of symbols in 1 line that a player needs to win (win combo) and you can also play against more than 1 player, which can be either a person or a computer.
+                        </p>
+                        <h3>Controls</h3>
+                        <p>
+                            The bottom bar shows the current state of the game. It tells you who is playing, who has won, who should confirm their turn, etc. You can place your glyph on the board by simply tapping on the cell you have chosen. By default, touch screens require you to confirm your moves, but you can change this behaviour in the settings. This is to avoid missed moves where you accidentally tap the wrong cell, which can lead to frustrating experience.
+                        </p>
+                    </div>
+
                 </div>
             </div>
 
@@ -532,6 +543,21 @@
 
                     <div class="check-option">
                         <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7 18h2V6H7v12zm4 4h2V2h-2v20zm-8-8h2v-4H3v4zm12 4h2V6h-2v12zm4-8v4h2v-4h-2z"/></svg>
+                        </div>
+                        <div class="value">
+                            <div class="title">Sound effects</div>
+                            <div class="input">
+                                <input type="checkbox" title="sound effects" id="sound-effects-check">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottom-descriptor">
+                        If allowed different sound effects will be played on some in-game events.
+                    </div>
+
+                    <div class="check-option">
+                        <div class="icon">
                             <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px"
                                 viewBox="0 0 24 24" width="30px" fill=var(--text-color)>
                                 <g>
@@ -571,6 +597,8 @@
 
 </body>
 
+<!-- https://github.com/goldfire/howler.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="script.js"></script>
 
 </html>
