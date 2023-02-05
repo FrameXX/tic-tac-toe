@@ -485,18 +485,6 @@ function setCurrentOptionValues() {
     }
 }
 
-// hide splashscreeen after page loads
-addEventListener("load", function () {
-    setTimeout(function () {
-        const splashscreen = document.getElementById("splashscreen");
-        splashscreen.style.opacity = 0;
-
-        setTimeout(function () {
-            splashscreen.style.display = "none";
-        }, 170);
-    }, 250);
-});
-
 if (window[storage].getItem("storageUsed") == null) {
     window[storage].setItem("storageUsed", true)
     resetStorage();
@@ -1308,3 +1296,15 @@ function updateMenuStyle() {
         }, 310);
     }
 }
+
+// hide splashscreeen after page loads
+addEventListener("load", function () {
+    setTimeout(function () {
+        const splashscreen = document.getElementById("splashscreen");
+        splashscreen.style.opacity = 0;
+
+        setTimeout(function () {
+            splashscreen.style.display = "none";
+        }, 170);
+    }, 250);
+});
