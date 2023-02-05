@@ -88,6 +88,7 @@ class Player {
     }
 
     changeSymbol() {
+        configuration.soundEffects && soundEffects.placeSymbol.play();
         this.symbol = Object.keys(symbols)[getTotalIndex(Object.keys(symbols).indexOf(this.symbol)  + 1, Object.keys(symbols))];
         var symbolElement = stringToHTML(getSymbolElementString(this.symbol, 35, this.id, "transform: scale(4); opacity: 0; transition: transform 160ms linear, opacity 160ms linear;"));
         var symbolButton = document.getElementById(`${this.id}-symbol-button`);
@@ -96,13 +97,13 @@ class Player {
         getComputedStyle(symbolElement).opacity;
         symbolElement.style.opacity = 1;
         symbolElement.style.transform = "";
-        for (row of grid.cells) {
-            for (cell of row) {
+        for (const row of grid.cells) {
+            row.forEach(cell => {
                 if (cell.captured == this.id) {
                     cell.removeSymbol();
                     cell.placeSymbol(this.id);
                 }
-            }
+            });
         }
     }
 
@@ -122,7 +123,7 @@ class Player {
 
             let indexesToRemove;
             indexesToRemove = [];
-            for (var [index, pair] of optionRangeValuePairs.entries()) {
+            for (const [index, pair] of optionRangeValuePairs.entries()) {
                 if (pair.player == this.id) {
                     indexesToRemove.push(index);
                 }
@@ -132,7 +133,7 @@ class Player {
             }
 
             indexesToRemove = [];
-            for (var [index, pair] of optionCheckboxes.entries()) {
+            for (const [index, pair] of optionCheckboxes.entries()) {
                 if (pair.player == this.id) {
                     indexesToRemove.push(index);
                 }
@@ -147,7 +148,7 @@ class Player {
                 players[playersOrder[index]].position = index - 1;
             }
 
-            for (row of grid.cells) {
+            for (const row of grid.cells) {
                 for (cell of row) {
                     if (cell.captured == this.id) {
                         cell.removeSymbol();
@@ -219,6 +220,7 @@ class Cell {
         if (this.symbolElement !== null) {
             throw new Error(`Tryed to place symbol on row ${this.row} and column ${this.column} that already has symbol.`);
         } else {
+            this.element.style.cursor = "not-allowed";
             this.symbolElement = stringToHTML(getSymbolElementString(players[playerId].symbol, grid.cellSize - 6, playerId, "transform: scale(4); opacity: 0; transition: transform 160ms linear, opacity 160ms linear;"));
             this.element.append(this.symbolElement);
             getComputedStyle(this.symbolElement).opacity;
@@ -232,6 +234,7 @@ class Cell {
         if (this.symbolElement == null) {
             throw new Error(`Tryed to remove non-existent symbol on row ${this.row} and column ${this.column}.`);
         } else {
+            this.element.style.cursor = "pointer";
             this.symbolElement.style.transform = "scale(4)";
             this.symbolElement.style.opacity = 0;
             setTimeout(function(symbolElement) {
@@ -287,7 +290,7 @@ globalStorage = {
     }, setItem(id, value) {
         this.values[id] = value;
     }, clear() {
-        for (item of Object.keys(this.values)) {
+        for (const item of Object.keys(this.values)) {
             delete this.values[item];
         }
     }, values: {}
@@ -320,7 +323,7 @@ addEventListener("resize", function () {
 new ResizeObserver(requestFunction.bind(null, updateExpanderSize.bind(null ,"players"), 100, "updatePlayersSize")).observe(document.getElementById("expand-players-content"));
 
 function updatePlayerDOMSizes() {
-    for (player of playersOrder) {
+    for (const player of playersOrder) {
         players[player].updateDOMSize();
     }
 }
@@ -339,7 +342,7 @@ function addNewPlayer(first = false, computer = false) {
 
 function assignRangeValueListeners(pairs) {
     log("assigning range-value listeners", 3);
-    for (pair of pairs) {
+    for (const pair of pairs) {
         if (pair.player === null) {
             document.getElementById(`${pair.optionDOM}-range`).addEventListener("input", updateOptionRangeValuePair.bind(null, pair, "range"));
             document.getElementById(`${pair.optionDOM}-value`).addEventListener("input", updateOptionRangeValuePair.bind(null, pair, "value"));
@@ -377,7 +380,7 @@ assignCheckboxListeners(optionCheckboxes);
 
 function assignCheckboxListeners(checkboxes) {
     log("assigning checkbox listeners", 3);
-    for (checkbox of checkboxes) {
+    for (const checkbox of checkboxes) {
         let element;
         if (checkbox.player === null) {
             element = document.getElementById(`${checkbox.optionDOM}-check`);
@@ -406,7 +409,7 @@ assignSelectListeners(optionSelects);
 
 function assignSelectListeners(selects) {
     log("assigning select listeners", 3);
-    for (select of optionSelects) {
+    for (const select of optionSelects) {
         log(`assigning select listeners for: ${JSON.stringify(select)}`, 4);
         let element;
         if (select.player === null) {
@@ -460,7 +463,7 @@ function updateCheckboxDisablers(checkbox) {
 
 function setCurrentOptionValues() {
     log("setting current option values", 2);
-    for (pair of optionRangeValuePairs) {
+    for (const pair of optionRangeValuePairs) {
         if (pair.player === null) {
             document.getElementById(`${pair.optionDOM}-value`).value = configuration[pair.optionJS]*pair.multiplier;
         } else {
@@ -468,7 +471,7 @@ function setCurrentOptionValues() {
         }
         updateOptionRangeValuePair(pair, "value");
     }
-    for (checkbox of optionCheckboxes) {
+    for (const checkbox of optionCheckboxes) {
         if (checkbox.player === null) {
             document.getElementById(`${checkbox.optionDOM}-check`).checked = configuration[checkbox.optionJS];
         } else {
@@ -476,7 +479,7 @@ function setCurrentOptionValues() {
         }
         updateCheckboxDisablers(checkbox);
     }
-    for (select of optionSelects) {
+    for (const select of optionSelects) {
         if (select.player === null) {
             document.getElementById(`${select.optionDOM}-select`).value = configuration[select.optionJS];
         } else {
@@ -618,7 +621,7 @@ function gameEnd(draw, winCells) {
         log("player won - ending game", 3);
         game.won = game.playing;
         bannerMessage(getSymbolElementString(currentPlayer.symbol, 30, game.playing) + `<div style="margin-left: 10px;">won</div>`);
-        for (cell of winCells) {
+        for (const cell of winCells) {
             cell.highlight(game.playing);
             cell.symbolElement.style.transform = "scale(3)";
             setTimeout(function(fromGame, cell) {
@@ -698,7 +701,7 @@ function buildMoves(playerId) {
     log("building moves", 3);
     moves = [];
     moveCells = getEmptyGridCells();
-    for (cell of moveCells) {
+    for (const cell of moveCells) {
         moves.push({cell: cell, points: getAllCellPoints(cell, playerId)});
     }
     log(moves, 4);
@@ -717,7 +720,7 @@ function compareMoves(a, b) {
 
 function getEmptyGridCells() {
     cells = [];
-    for (row of grid.cells) {
+    for (const row of grid.cells) {
         for (cell of row) {
             if (cell.captured == null) {
                 cells.push(cell);
@@ -731,7 +734,7 @@ function getAllCellPoints(cell, playerId) {
     const playerPoints = getCellPoints(cell, playerId);
     log(`cell points in cell ${cell.row}, ${cell.column} are ${playerPoints} for ${playerId}`, 4);
     let opponentsPoints = 0;
-    for (opponentId of playersOrder) {
+    for (const opponentId of playersOrder) {
         if (opponentId != playerId) {
             opponentsPoints += getCellPoints(cell, opponentId);
             log(`cell points in cell ${cell.row}, ${cell.column} are ${opponentsPoints} for ${opponentId}`, 4);
@@ -780,7 +783,8 @@ function getWinCells(cell) {
                 let cellPoints = getSingleCellPoints(grid.cells[row][column], game.playing, 1);
                 if (cellPoints <= 0) {
                     break;
-                } else if (cellPoints == 30) {
+                } else if (cellPoints == 50) {
+                    log(`adding winCell to ${currentWinCells}`, 5);
                     winCells[currentWinCells].push(grid.cells[row][column]);
                 }
                 if (winCells[currentWinCells].length == configuration.winCombo) {
@@ -820,7 +824,7 @@ function checkCellComboOrder(winCells) {
 
 function getCellPoints(cell, playerId) {
     log(`getting cell points in cell ${cell.row}, ${cell.column} for ${playerId}`, 5);
-    let points = 0, multipliers = {axis0: 1, axis45: 1, axis90: 1, axis135: 1}, row, column, inferiority, currentAxis, cellPoints, addPoints;
+    let points = 0, multipliers = {axis0: 1, axis45: 1, axis90: 1, axis135: 1}, row, column, inferiority, currentAxis, cellPoints, addPoints, localMultiplier;
 
     if (cell.captured != null) {
         throw new Error("Cannot get cell points of already captured cell.")
@@ -838,6 +842,7 @@ function getCellPoints(cell, playerId) {
                 row = cell.row, column = cell.column;
                 inferiority = 1;
                 currentAxis = `axis${getAxis(rowAdd, columnAdd)}`;
+                localMultiplier = multipliers[currentAxis];
                 while (Math.abs(cell.row - row) < configuration.winCombo - 1 && Math.abs(cell.column - column) < configuration.winCombo - 1) {
 
                     row += rowAdd;
@@ -848,15 +853,21 @@ function getCellPoints(cell, playerId) {
                     }
 
                     log(`checking cell: ${row}, ${column}`, 5);
-                    cellPoints = getSingleCellPoints(grid.cells[row][column], playerId, multipliers[currentAxis]);
+                    cellPoints = getSingleCellPoints(grid.cells[row][column], playerId, localMultiplier);
                     addPoints = Math.round((cellPoints/inferiority)*100)/100;
                     log(`adding ${addPoints} points`, 5);
                     points += addPoints;
-                    inferiority *= 1.5;
+                    inferiority *= 1.06;
                     if (cellPoints <= 0) {
                         break;
-                    } else if (cellPoints >= 30) {
+                    }
+                    if (cellPoints >= 30 && localMultiplier == multipliers[currentAxis]) {
                         multipliers[currentAxis] *= 125/configuration.winCombo**2;
+                        localMultiplier = multipliers[currentAxis];
+                        log(`increased global multiplier for ${currentAxis} to ${multipliers[currentAxis]}`, 5);
+                    } else if (multipliers[currentAxis] > 1) {
+                        localMultiplier = Math.max(localMultiplier/(125/configuration.winCombo**2)/2, 1);
+                        log(`decreased local multiplier to ${localMultiplier}`, 5);
                     }
 
                 }
@@ -884,7 +895,7 @@ function getAxis(rowAdd, columnAdd) {
 function getSingleCellPoints(cell, playerId, pointMultiplier) {
     let points;
     if (cell.captured == playerId) {
-        points = 30*pointMultiplier;
+        points = 50*pointMultiplier;
     } else if (cell.captured == null) {
         points = 10;
     } else {
@@ -931,14 +942,14 @@ function restoreGame(data) {
     playersOrderRestored = data.playersOrder;
     const playersRecovered = data.players;
     expandPart("players");
-    for (playerId of playersOrderRestored) {
+    for (const playerId of playersOrderRestored) {
         players[playerId] = new Player(playersRecovered[playerId]);
     }
     delayedClosePlayersExpander();
     game = data.game;
     grid = data.grid;
     writeGrid();
-    for (let [rowIndex, row] of grid.cells.entries()) {
+    for (const [rowIndex, row] of grid.cells.entries()) {
         for (let [columnIndex, cell] of row.entries()) {
             grid.cells[rowIndex][columnIndex] = new Cell(cell);
         }
