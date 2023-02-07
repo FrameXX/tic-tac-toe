@@ -513,7 +513,7 @@ setCurrentOptionValues();
 saveData();
 
 function startNewGame(user = false) {
-    if (!user || configuration.confirmTurn == "never" || (configuration.confirmTurn == "touchscreen" && !navigator.touchscreen) || !game.won == null || confirm("Are you sure you want to start a new game? Current game will be lost.")) {
+    if (!user || configuration.confirmTurn == "never" || (configuration.confirmTurn == "touchscreen" && !navigator.touchscreen) || !(game.won == null) || confirm("Are you sure you want to start a new game? Current game will be lost.")) {
         log("starting new game", 1);
         grid = {rotated: false, cellSize: configuration.optimalCellSize, cells: []}
         game = {turn: 0, won: null, playing: playersOrder[0], id: getRandomId(4)};
@@ -924,7 +924,7 @@ function getSingleCellPoints(cell, playerId, pointMultiplier) {
     if (cell.captured == playerId) {
         points = 50*pointMultiplier;
     } else if (cell.captured == null) {
-        points = 10;
+        points = 20;
     } else {
         points = 0;
     }
@@ -1332,6 +1332,38 @@ function updateMenuStyle() {
         setTimeout(function () {
             openMenu();
         }, 310);
+    }
+}
+
+registerServiceWorker();
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+        try {
+            let reg;
+            reg = await navigator.serviceWorker.register('/tic-tac-toe/service-worker.js');
+            console.log('service worker registered', reg);
+            if (!matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById("install-app-button").style.display = "";
+            }
+        } catch (err) {
+            console.error('service worker registration failed: ', err);
+        }
+        });
+    }
+}
+
+addEventListener("beforeinstallprompt", function(event) {
+    event.preventDefault();
+    pwaInstallPrompt = event;
+});
+
+function installApp() {
+    if (typeof pwaInstallPrompt != "undefined") {
+        pwaInstallPrompt.prompt();
+    } else {
+        showToast("You can install the app from you browser action menu.", `<svg class="icon" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill="hsl(var(--hue), var(--top-accent))"><g><rect fill="none" height="24" width="24" /></g><g><path d="M18,15v3H6v-3H4v3c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2v-3H18z M17,11l-1.41-1.41L13,12.17V4h-2v8.17L8.41,9.59L7,11l5,5 L17,11z" /></g></svg>`)
     }
 }
 

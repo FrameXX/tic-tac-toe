@@ -1,0 +1,19 @@
+{
+    "name": "Tic Tac Toe",
+    "short_name": "Tic Tac Toe",
+    "start_url": "/tic-tac-toe/index.html",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "orientation": "portrait-primary",
+    "icons": [
+      {
+        "src": "/tic-tac-toe/favicon.svg",
+        "type": "image/svg+xml"
+      },
+      {
+        "src": "/tic-tac-toe/favicon.png",
+        "type": "image/png", "sizes": "256x256"
+      }
+    ]
+  }
