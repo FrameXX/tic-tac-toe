@@ -90,8 +90,8 @@ class Player {
     changeSymbol() {
         configuration.soundEffects && soundEffects.placeSymbol.play();
         this.symbol = Object.keys(symbols)[getTotalIndex(Object.keys(symbols).indexOf(this.symbol)  + 1, Object.keys(symbols))];
-        var symbolElement = stringToHTML(getSymbolElementString(this.symbol, 35, this.id, "transform: scale(4); opacity: 0; transition: transform 160ms linear, opacity 160ms linear;"));
-        var symbolButton = document.getElementById(`${this.id}-symbol-button`);
+        let symbolElement = stringToHTML(getSymbolElementString(this.symbol, 35, this.id, "transform: scale(4); opacity: 0; transition: transform 160ms linear, opacity 160ms linear;"));
+        let symbolButton = document.getElementById(`${this.id}-symbol-button`);
         symbolButton.innerHTML = "";
         symbolButton.append(symbolElement);
         getComputedStyle(symbolElement).opacity;
@@ -105,6 +105,10 @@ class Player {
                 }
             });
         }
+        if (game.playing == this.id) {
+            bannerMessage(getSymbolElementString(this.symbol, 30, game.playing) + `<div style="margin-left: 10px;">plays</div>`);
+        }
+        saveData();
     }
 
     updateName() {
@@ -142,7 +146,7 @@ class Player {
                 optionCheckboxes.splice(indexesToRemove.pop(), 1);
             }
 
-            for (index = this.position + 1; index < playersOrder.length; index++) {
+            for (let index = this.position + 1; index < playersOrder.length; index++) {
                 document.getElementById(`${index}-player-animator`).id = `${index - 1}-player-animator`;
                 document.getElementById(`${index}-player`).id = `${index - 1}-player`;
                 players[playersOrder[index]].position = index - 1;
@@ -217,7 +221,7 @@ class Cell {
     }
 
     placeSymbol(playerId) {
-        if (this.symbolElement !== null) {
+        if (this.symbolElement != null) {
             throw new Error(`Tryed to place symbol on row ${this.row} and column ${this.column} that already has symbol.`);
         } else {
             this.element.style.cursor = "not-allowed";
@@ -320,6 +324,11 @@ addEventListener("resize", function () {
     updateOpenedExpanders();
 });
 
+matchMedia('(prefers-color-scheme: dark)').addEventListener("change", updateTheme);
+matchMedia("(pointer: coarse)").addEventListener("change", function() {
+    navigator.touchscreen = matchMedia("(pointer: coarse)").matches;
+});
+
 new ResizeObserver(requestFunction.bind(null, updateExpanderSize.bind(null ,"players"), 100, "updatePlayersSize")).observe(document.getElementById("expand-players-content"));
 
 function updatePlayerDOMSizes() {
@@ -334,7 +343,7 @@ assignRangeValueListeners(optionRangeValuePairs);
 function addNewPlayer(first = false, computer = false) {
     const id = getRandomId(4);
     const position = playersOrder.length;
-    players[id] = new Player({id: id, position: position, name: `Player ${position + 1}`, symbol: Object.keys(symbols)[getTotalIndex(position, Object.keys(symbols))], hue: Object.values(hues)[getTotalIndex(position, Object.values(hues))], computer: computer, mistakeRate: 0, agressivity: 1, lastCellCoords: null});
+    players[id] = new Player({id: id, position: position, name: `Player ${position + 1}`, symbol: Object.keys(symbols)[getTotalIndex(position, Object.keys(symbols))], hue: Object.values(hues)[getTotalIndex(position, Object.values(hues))], computer: computer, mistakeRate: 0.2, agressivity: 1, lastCellCoords: null});
     if (!first) {
         saveData();
     }
@@ -503,24 +512,26 @@ updateMenuStyle();
 setCurrentOptionValues();
 saveData();
 
-function startNewGame() {
-    log("starting new game", 1);
-    grid = {rotated: false, cellSize: configuration.optimalCellSize, cells: []}
-    game = {turn: 0, won: null, playing: playersOrder[0], id: getRandomId(4)};
-    if (configuration.autoGridSizes) {
-        gridCounts = getOptimalGridCounts()
-        grid.rows = gridCounts[0];
-        grid.columns = gridCounts[1];
-    } else {
-        grid.rows = configuration.gridRows;
-        grid.columns = configuration.gridColumns;
+function startNewGame(user = false) {
+    if (!user || configuration.confirmTurn == "never" || (configuration.confirmTurn == "touchscreen" && !navigator.touchscreen) || !game.won == null || confirm("Are you sure you want to start a new game? Current game will be lost.")) {
+        log("starting new game", 1);
+        grid = {rotated: false, cellSize: configuration.optimalCellSize, cells: []}
+        game = {turn: 0, won: null, playing: playersOrder[0], id: getRandomId(4)};
+        if (configuration.autoGridSizes) {
+            gridCounts = getOptimalGridCounts()
+            grid.rows = gridCounts[0];
+            grid.columns = gridCounts[1];
+        } else {
+            grid.rows = configuration.gridRows;
+            grid.columns = configuration.gridColumns;
+        }
+        grid.cells = createEmptyGridCells();
+        writeGrid();
+        for (player in players) {
+            players[player].lastCellCoords = null;
+        }
+        initGame();
     }
-    grid.cells = createEmptyGridCells();
-    writeGrid();
-    for (player in players) {
-        players[player].lastCellCoords = null;
-    }
-    initGame();
 }
 
 function createEmptyGridCells() {
@@ -566,7 +577,6 @@ function initGame() {
 
 function turn() {
     log("starting turn", 2);
-    playGrid.style.pointerEvents = "all";
     game.playing = playersOrder[getTotalIndex(game.turn, playersOrder)];
     let currentPlayer = players[game.playing];
     changeHue(currentPlayer.hue);
@@ -576,10 +586,18 @@ function turn() {
         let moves = buildMoves(game.playing);
         setTimeout(function(fromGame) {
             if (fromGame.id == game.id) {
-                let chosenCell = moves[getRandomNumber(0, Math.round((moves.length - 1)*(currentPlayer.mistakeRate**4)))].cell;
+                let mistake = getRandomNumber(1, 1/currentPlayer.mistakeRate**2) == 1, chosenCell;
+                if (mistake) {
+                    log("computer player made a mistake", 2);
+                    chosenCell = moves[Math.round(getRandomNumber(1, Math.max(1, currentPlayer.mistakeRate*3.5)))].cell;
+                } else {
+                    chosenCell = moves[0].cell;
+                }
                 nextTurn(chosenCell);
             }
         }.bind(null, structuredClone(game)), getRandomNumber(800, 1600));
+    } else {
+        playGrid.style.pointerEvents = "all";
     }
 }
 
@@ -824,7 +842,7 @@ function checkCellComboOrder(winCells) {
 
 function getCellPoints(cell, playerId) {
     log(`getting cell points in cell ${cell.row}, ${cell.column} for ${playerId}`, 5);
-    let points = 0, multipliers = {axis0: 1, axis45: 1, axis90: 1, axis135: 1}, row, column, inferiority, currentAxis, cellPoints, addPoints, localMultiplier;
+    let points = 0, multipliers = {axis0: 1, axis45: 1, axis90: 1, axis135: 1}, row, column, inferiority, currentAxis, cellPoints, addPoints, localMultiplier, winCellMultiplier, pointsBefore;
 
     if (cell.captured != null) {
         throw new Error("Cannot get cell points of already captured cell.")
@@ -843,6 +861,8 @@ function getCellPoints(cell, playerId) {
                 inferiority = 1;
                 currentAxis = `axis${getAxis(rowAdd, columnAdd)}`;
                 localMultiplier = multipliers[currentAxis];
+                winCellMultiplier = 1;
+                pointsBefore = points;
                 while (Math.abs(cell.row - row) < configuration.winCombo - 1 && Math.abs(cell.column - column) < configuration.winCombo - 1) {
 
                     row += rowAdd;
@@ -854,10 +874,10 @@ function getCellPoints(cell, playerId) {
 
                     log(`checking cell: ${row}, ${column}`, 5);
                     cellPoints = getSingleCellPoints(grid.cells[row][column], playerId, localMultiplier);
-                    addPoints = Math.round((cellPoints/inferiority)*100)/100;
+                    addPoints = (Math.round((cellPoints/inferiority)*100)/100)*Math.max(1, winCellMultiplier);
                     log(`adding ${addPoints} points`, 5);
                     points += addPoints;
-                    inferiority *= 1.06;
+                    inferiority *= 5.375/configuration.winCombo;
                     if (cellPoints <= 0) {
                         break;
                     }
@@ -865,11 +885,18 @@ function getCellPoints(cell, playerId) {
                         multipliers[currentAxis] *= 125/configuration.winCombo**2;
                         localMultiplier = multipliers[currentAxis];
                         log(`increased global multiplier for ${currentAxis} to ${multipliers[currentAxis]}`, 5);
-                    } else if (multipliers[currentAxis] > 1) {
-                        localMultiplier = Math.max(localMultiplier/(125/configuration.winCombo**2)/2, 1);
-                        log(`decreased local multiplier to ${localMultiplier}`, 5);
+                        winCellMultiplier = Math.round(winCellMultiplier*(5.3/configuration.winCombo)*100)/100;
+                        log(`increased winCell multiplier to ${winCellMultiplier}`, 5);
+                    } else {
+                        if (multipliers[currentAxis] > 1) {
+                            localMultiplier = Math.max(localMultiplier/(125/configuration.winCombo**2)/2, 1);
+                            log(`decreased local multiplier to ${localMultiplier}`, 5);
+                        }
+                        if (winCellMultiplier == 1) {
+                            winCellMultiplier = 0;
+                            log("winCell multiplier canceled", 5);
+                        }
                     }
-
                 }
             }
         }
