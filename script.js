@@ -273,6 +273,7 @@ function stringToHTML(str) {
 // initiate global objects
 const soundEffects = {placeSymbol: new Howl({ src: ["audio/place-symbol.ogg"] }), removeSymbol: new Howl({ src: ["audio/remove-symbol.ogg"] })};
 navigator.touchscreen = matchMedia("(pointer: coarse)").matches;
+configuration = {gridRows: 25, gridColumns: 15, borderPart: 0.20, showCellIndexes: false, optimalCellSize: 30 , autoGridSizes: true, winCombo: 5, rotateGrid: true, theme: "auto", confirmTurn: "touchscreen", playedGames: {}, soundEffects: true};
 maxLogDepth = 0;
 cssVariables = document.querySelector(":root");
 expanded = {players: false};
@@ -505,6 +506,7 @@ if (window[storage].getItem("ttt-storage-used") !== true) {
     startNewGame();
 } else {
     restoreData();
+    initGame();
 }
 updateMenuStyle();
 setCurrentOptionValues();
@@ -550,7 +552,7 @@ function delayedClosePlayersExpander() {
         setTimeout(function() {
             document.getElementById("expand-players-animator").style.height = 0;
         }, 100);
-    }, 500);
+    }, 600);
 }
 
 function initGame() {
@@ -979,7 +981,6 @@ function restoreGame(data) {
         players[player].highlightLastCell();
     }
     saveData();
-    initGame();
 }
 
 function log(message, depth) {
