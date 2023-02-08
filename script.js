@@ -315,23 +315,6 @@ function getSymbolElementString(id, size, playerId, style = "") {
     return symbol.outerHTML.replace(/(?<=fill=")#(?!000000)(?:[a-f]|[0-9]){6}/gm, `hsl(var(--${playerId}-hue), var(--symbol-accent))`).replace("<svg ", `<svg style="${style}" `);
 }
 
-// actions after window resize
-addEventListener("resize", function () {
-    updateMenuStyle();
-    requestFunction(updateGridTransforms, 200, "updateGridTransforms");
-    if (expanded.players) {
-        updatePlayerDOMSizes();
-    }
-    updateOpenedExpanders();
-});
-
-matchMedia('(prefers-color-scheme: dark)').addEventListener("change", updateTheme);
-matchMedia("(pointer: coarse)").addEventListener("change", function() {
-    navigator.touchscreen = matchMedia("(pointer: coarse)").matches;
-});
-
-new ResizeObserver(requestFunction.bind(null, updateExpanderSize.bind(null ,"players"), 100, "updatePlayersSize")).observe(document.getElementById("expand-players-content"));
-
 function updatePlayerDOMSizes() {
     for (const player of playersOrder) {
         players[player].updateDOMSize();
@@ -498,7 +481,7 @@ function setCurrentOptionValues() {
     }
 }
 
-if (window[storage].getItem("ttt-storage-used") !== true) {
+if (window[storage].getItem("ttt") == null) {
     expandPart("players");
     addNewPlayer(true);
     addNewPlayer(true, true);
@@ -511,6 +494,54 @@ if (window[storage].getItem("ttt-storage-used") !== true) {
 updateMenuStyle();
 setCurrentOptionValues();
 saveData();
+
+registerServiceWorker();
+
+addEventListener("beforeinstallprompt", function(event) {
+    event.preventDefault();
+    pwaInstallPrompt = event;
+});
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+        try {
+            let reg;
+            reg = await navigator.serviceWorker.register('/tic-tac-toe/service-worker.js');
+            // console.log('service worker registered', reg);
+            if (!matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById("install-app-button").style.display = "";
+            }
+        } catch (err) {
+            // console.error('service worker registration failed: ', err);
+        }
+        });
+    }
+}
+
+function installApp() {
+    if (typeof pwaInstallPrompt != "undefined") {
+        pwaInstallPrompt.prompt();
+    } else {
+        showToast("You can install the app from you browser action menu.", `<svg class="icon" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill="hsl(var(--hue), var(--top-accent))"><g><rect fill="none" height="24" width="24" /></g><g><path d="M18,15v3H6v-3H4v3c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2v-3H18z M17,11l-1.41-1.41L13,12.17V4h-2v8.17L8.41,9.59L7,11l5,5 L17,11z" /></g></svg>`)
+    }
+}
+
+addEventListener("resize", function () {
+    updateMenuStyle();
+    requestFunction(updateGridTransforms, 200, "updateGridTransforms");
+    if (expanded.players) {
+        updatePlayerDOMSizes();
+    }
+    updateOpenedExpanders();
+});
+
+matchMedia('(prefers-color-scheme: dark)').addEventListener("change", updateTheme);
+matchMedia("(pointer: coarse)").addEventListener("change", function() {
+    navigator.touchscreen = matchMedia("(pointer: coarse)").matches;
+});
+
+new ResizeObserver(requestFunction.bind(null, updateExpanderSize.bind(null ,"players"), 100, "updatePlayersSize")).observe(document.getElementById("expand-players-content"));
 
 function startNewGame(user = false) {
     if (!user || configuration.confirmTurn == "never" || (configuration.confirmTurn == "touchscreen" && !navigator.touchscreen) || !(game.won == null) || confirm("Are you sure you want to start a new game? Current game will be lost.")) {
@@ -948,14 +979,13 @@ function getTotalIndex(index, array) {
 
 function clearStorage() {
     if (confirm("This action will remove all data and preferences this app saved on your device. Are you sure?")) {
-        window[storage].setItem("ttt-main", null);
-        window[storage].setItem("ttt-storage-used", null);
+        window[storage].setItem("ttt", null);
         location.reload();
     }
 }
 
 function restoreData() {
-    const data = structuredClone(JSON.parse(window[storage].getItem("ttt-main")));
+    const data = structuredClone(JSON.parse(window[storage].getItem("ttt")));
     log(`restoring data`, 1);
     configuration = data.configuration;
     restoreGame(data);
@@ -1058,8 +1088,7 @@ function applyData() {
 function saveData() {
     log(`saving data`, 4);
     let data = {configuration: configuration, grid: grid, playersOrder: playersOrder, players: players, game: game};
-    window[storage].setItem("ttt-main", JSON.stringify(data));
-    window[storage].setItem("ttt-storage-used", true);
+    window[storage].setItem("ttt", JSON.stringify(data));
 }
 
 function closeAllExpanders() {
@@ -1328,38 +1357,6 @@ function updateMenuStyle() {
         setTimeout(function () {
             openMenu();
         }, 310);
-    }
-}
-
-registerServiceWorker();
-
-function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', async () => {
-        try {
-            let reg;
-            reg = await navigator.serviceWorker.register('/tic-tac-toe/service-worker.js');
-            // console.log('service worker registered', reg);
-            if (!matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById("install-app-button").style.display = "";
-            }
-        } catch (err) {
-            // console.error('service worker registration failed: ', err);
-        }
-        });
-    }
-}
-
-addEventListener("beforeinstallprompt", function(event) {
-    event.preventDefault();
-    pwaInstallPrompt = event;
-});
-
-function installApp() {
-    if (typeof pwaInstallPrompt != "undefined") {
-        pwaInstallPrompt.prompt();
-    } else {
-        showToast("You can install the app from you browser action menu.", `<svg class="icon" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill="hsl(var(--hue), var(--top-accent))"><g><rect fill="none" height="24" width="24" /></g><g><path d="M18,15v3H6v-3H4v3c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2v-3H18z M17,11l-1.41-1.41L13,12.17V4h-2v8.17L8.41,9.59L7,11l5,5 L17,11z" /></g></svg>`)
     }
 }
 
