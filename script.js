@@ -497,9 +497,7 @@ function setCurrentOptionValues() {
     }
 }
 
-if (window[storage].getItem("storageUsed") == null) {
-    window[storage].setItem("storageUsed", true)
-    resetStorage();
+if (window[storage].getItem("ttt-storage-used") !== true) {
     expandPart("players");
     addNewPlayer(true);
     addNewPlayer(true, true);
@@ -948,18 +946,14 @@ function getTotalIndex(index, array) {
 
 function clearStorage() {
     if (confirm("This action will remove all data and preferences this app saved on your device. Are you sure?")) {
-        window[storage].clear();
+        window[storage].setItem("ttt-main", null);
+        window[storage].setItem("ttt-storage-used", null);
         location.reload();
     }
 }
 
-function resetStorage() {
-    configuration = {gridRows: 25, gridColumns: 15, borderPart: 0.20, showCellIndexes: false, optimalCellSize: 30 , autoGridSizes: true, winCombo: 5, rotateGrid: true, theme: "auto", confirmTurn: "touchscreen", playedGames: {}, soundEffects: true};
-    window[storage].setItem("configuration", JSON.stringify(configuration));
-}
-
 function restoreData() {
-    const data = structuredClone(JSON.parse(window[storage].getItem("main")));
+    const data = structuredClone(JSON.parse(window[storage].getItem("ttt-main")));
     log(`restoring data`, 1);
     configuration = data.configuration;
     restoreGame(data);
@@ -1063,7 +1057,8 @@ function applyData() {
 function saveData() {
     log(`saving data`, 4);
     let data = {configuration: configuration, grid: grid, playersOrder: playersOrder, players: players, game: game};
-    window[storage].setItem("main", JSON.stringify(data));
+    window[storage].setItem("ttt-main", JSON.stringify(data));
+    window[storage].setItem("ttt-storage-used", true);
 }
 
 function closeAllExpanders() {
