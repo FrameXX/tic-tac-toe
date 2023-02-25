@@ -60,6 +60,8 @@ button {
     margin: 10px 16px;
     cursor: pointer;
     font-family: inherit;
+    font-size: 18px;
+    font-weight: 600;
     background-color: hsl(var(--hue), var(--top-accent));
     border-radius: 9px;
     border: none;
@@ -96,7 +98,7 @@ main {
 select:active,
 button:active,
 input[type=checkbox]:active {
-    outline: 3px solid hsl(var(--hue), var(--top-accent));
+    outline: 3px solid var(--text-color);
     outline-offset: 2px;
 }
 
@@ -394,7 +396,7 @@ input[type=number], input[type=text] {
     border-radius: 9px;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 14px;
     margin: 15px 10px 0 10px;
 }
 
@@ -402,14 +404,14 @@ input[type=number], input[type=text] {
     justify-content: space-evenly;
     align-items: center;
     display: flex;
-    margin: 5px 15px;
 }
 
 .player .symbol-name .symbol-button {
+    margin: 10px 12px;
     border-radius: 0;
     flex-shrink: 0;
     padding: 15px;
-    border: 6px solid var(--text-color);
+    border: 6px solid;
     background-color: var(--cell-color);
     padding: 5px;
 }
@@ -427,17 +429,60 @@ input[type=number], input[type=text] {
     font-size: 24px;
     width: 100%;
     text-align: center;
-    margin: 0 5px;
+    margin-right: 12px;
 }
 
 .player .button-options {
-    margin-top: 10px;
-    text-align: center;
+    display: flex;
+    margin-top: 15px;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .player .button-options button {
     padding: 10px;
-    margin: 12px;
+    margin: 10px;
+}
+
+.player-configuration {
+    display: none;
+}
+
+#configure-player {
+    display: none;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+    max-width: 425px;
+    max-height: calc(100% - 80px);
+    width: calc(100% - 80px);
+    height: calc(100% - 80px);
+    z-index: 8;
+    border-radius: 9px;
+    position: fixed;
+    box-shadow: var(--shadow-positions) 6px var(--shadow-color);
+    overflow: hidden;
+    transform: translateY(calc(-100% - 100px));
+    transition: transform 300ms ease-in-out;
+}
+
+#player-configurations {
+    padding: 14px;
+    height: calc(100% - 115px);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#close-player-configuration-button {
+    position: absolute;
+    width: 55px;
+    height: 55px;
+    left: 0;
+    right: 0;
+    bottom: 15px;
+    margin: auto;
 }
 
 #game-paused {
@@ -532,10 +577,9 @@ input[type=number], input[type=text] {
     transition: transform 200ms ease-in-out, opacity 500ms ease-in-out, background-color 300ms linear;
 }
 
-#dimmer {
+#dimmer, #top-dimmer {
     display: none;
     position: fixed;
-    z-index: 1;
     left: 0;
     right: 0;
     bottom: 0;
@@ -545,6 +589,14 @@ input[type=number], input[type=text] {
     background-color: hsl(var(--hue), var(--dark-accent), 0.7);
     opacity: 0;
     transition: opacity 300ms linear;
+}
+
+#dimmer {
+    z-index: 1;
+}
+
+#top-dimmer {
+    z-index: 6;
 }
 
 #menu {
@@ -674,6 +726,20 @@ input[type=number], input[type=text] {
     font-size: 26px;
     max-width: calc(100% - 130px);
     padding: 5px 5px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+    background-color: var(--text-color); 
+    border-radius: 9px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: grey;
 }
 
 @keyframes pulse {

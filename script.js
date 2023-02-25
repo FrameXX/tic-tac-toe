@@ -54,19 +54,27 @@ class Player {
     }
 
     createDOM(newDOM = true) {
+        let animator;
         if (newDOM) {
-            var animator = document.createElement("div");
+            animator = document.createElement("div");
             animator.id = `${this.position}-player-animator`;
             animator.setAttribute("class", "player-animator");
         } else {
-            var animator = document.getElementById(`${this.position}-player-animator`);
+            animator = document.getElementById(`${this.position}-player-animator`);
         }
         if (newDOM) {
             document.getElementById("players").append(animator);
         }
         var symbol = getSymbolElementString(this.symbol, 35, this.id);
-        animator.innerHTML = `<div class="player" id="${this.position}-player" style="background-color: hsl(var(--${this.id}-hue), var(--back-accent)); border-color: hsl(var(--${this.id}-hue), var(--symbol-accent)); transition: none;"><div class="icon-options"><div class="symbol-name"><button id="${this.id}-symbol-button" class="symbol-button" style="-webkit-tap-highlight-color: hsla(var(--${this.id}-hue), var(--symbol-accent), 20%);">${symbol}</button><input class="player-name-input" id="${this.id}-player-name-input" type="text" spellcheck="false"></div><div class="options"><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><path d="M12,4.81L12,19c-3.31,0-6-2.63-6-5.87c0-1.56,0.62-3.03,1.75-4.14L12,4.81 M12,2L6.35,7.56l0,0C4.9,8.99,4,10.96,4,13.13 C4,17.48,7.58,21,12,21c4.42,0,8-3.52,8-7.87c0-2.17-0.9-4.14-2.35-5.57l0,0L12,2z"/></g></svg></div><div class="value"><div class="title">Hue</div><div class="input"><input class="range" title="Hue"id="${this.id}-hue-range" type="range" min="0" max="360"><input class="number" type="number" min="0" max="360" id="${this.id}-hue-value"></div></div></div><div class="bottom-descriptor">Hue of the player and his symbol. Can be set from 0 to up to 360 degrees.</div><div class="check-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg></div><div class="value"><div class="title">Computer</div><div class="input"><input type="checkbox" title="Computer" id="${this.id}-computer-check"></div></div></div><div class="bottom-descriptor">An algorythm will make decisions on where to place symbol instead of a player.</div><div id="${this.id}-computer-options-wrapper"><div id="${this.id}-computer-options"><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div><div class="value"><div class="title">Mistake rate</div><div class="input"><input class="range" title="Mistake rate"id="${this.id}-mistake-rate-range" type="range" min="0" max="100"><input class="number" min="0" max="100" type="number" id="${this.id}-mistake-rate-value"></div></div></div><div class="bottom-descriptor">The bigger the value is the bigger is the chance of algorythm choosing not so optimal placement for its symbol.</div><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><g><rect fill="none" height="24" width="24"/></g><g><path d="M11,21h-1l1-7H7.5c-0.88,0-0.33-0.75-0.31-0.78C8.48,10.94,10.42,7.54,13.01,3h1l-1,7h3.51c0.4,0,0.62,0.19,0.4,0.66 C12.97,17.55,11,21,11,21z"/></g></svg></div><div class="value"><div class="title">Agressivity</div><div class="input"><input class="range" title="Agressivity"id="${this.id}-agressivity-range" type="range" min="50" max="150"><input class="number" type="number" min="50" max="150" id="${this.id}-agressivity-value"></div></div></div><div class="bottom-descriptor">The bigger the value is the more important its own successes become for algorythm compared to successes of the oponent.</div></div></div></div><div class="button-options"><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Move player ${this.name} up" id="${this.id}-move-player-up"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z"/></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Delete player ${this.name}" id="${this.id}-delete-player"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.12 10.47L12 12.59l-2.13-2.12-1.41 1.41L10.59 14l-2.12 2.12 1.41 1.41L12 15.41l2.12 2.12 1.41-1.41L13.41 14l2.12-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9z"/></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Move player ${this.name} down" id="${this.id}-move-player-down"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></button></div></div></div>`;
+        animator.innerHTML = `<div class="player" id="${this.position}-player" style="background-color: hsl(var(--${this.id}-hue), var(--back-accent)); border-color: hsl(var(--${this.id}-hue), var(--symbol-accent)); transition: none;"><div class="symbol-name"><button id="${this.id}-symbol-button" class="symbol-button" title="Change symbol" style="-webkit-tap-highlight-color: hsla(var(--${this.id}-hue), var(--symbol-accent), 20%); border-color: hsl(var(--${this.id}-hue), var(--top-accent));">${symbol}</button><input class="player-name-input" id="${this.id}-player-name-input" type="text" spellcheck="false"></div><div class="button-options"><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Move player ${this.name} up" id="${this.id}-move-player-up"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z"/></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Move player ${this.name} down" id="${this.id}-move-player-down"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Configure player ${this.name}" id="${this.id}-configure-player"><svg class="svg" xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"></path><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Delete player ${this.name}" id="${this.id}-delete-player"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.12 10.47L12 12.59l-2.13-2.12-1.41 1.41L10.59 14l-2.12 2.12 1.41 1.41L12 15.41l2.12 2.12 1.41-1.41L13.41 14l2.12-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9z"/></svg></button></div></div>`;
         animator.style.height = (getComputedStyle(document.getElementById(`${this.position}-player`)).height.replace("px", "")*1 + 45) + "px";
+        if (newDOM) {
+            const playerConfiguration = document.createElement("div");
+            playerConfiguration.id = `${this.id}-player-configuration`;
+            playerConfiguration.setAttribute("class", "player-configuration");
+            playerConfiguration.innerHTML = `<div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><path d="M12,4.81L12,19c-3.31,0-6-2.63-6-5.87c0-1.56,0.62-3.03,1.75-4.14L12,4.81 M12,2L6.35,7.56l0,0C4.9,8.99,4,10.96,4,13.13 C4,17.48,7.58,21,12,21c4.42,0,8-3.52,8-7.87c0-2.17-0.9-4.14-2.35-5.57l0,0L12,2z"/></g></svg></div><div class="value"><div class="title">Hue</div><div class="input"><input class="range" title="hue"id="${this.id}-hue-range" type="range" min="0" max="360"><input class="number" type="number" id="${this.id}-hue-value"></div></div></div><div class="bottom-descriptor">Hue of the player and his symbol. Can be set from 0 to up to 360 degrees.</div><div class="check-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg></div><div class="value"><div class="title">Computer</div><div class="input"><input type="checkbox" title="computer" id="${this.id}-computer-check"></div></div></div><div class="bottom-descriptor">An algorythm will make decisions on where to place symbol instead of a player.</div><div id="${this.id}-computer-options-wrapper"><div id="${this.id}-computer-options"><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div><div class="value"><div class="title">Mistake rate</div><div class="input"><input class="range" title="mistake rate"id="${this.id}-mistake-rate-range" type="range" min="0" max="100"><input class="number" type="number" id="${this.id}-mistake-rate-value"></div></div></div><div class="bottom-descriptor">The bigger the value is the bigger is the chance of algorythm choosing not so optimal placement for its symbol.</div><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><g><rect fill="none" height="24" width="24"/></g><g><path d="M11,21h-1l1-7H7.5c-0.88,0-0.33-0.75-0.31-0.78C8.48,10.94,10.42,7.54,13.01,3h1l-1,7h3.51c0.4,0,0.62,0.19,0.4,0.66 C12.97,17.55,11,21,11,21z"/></g></svg></div><div class="value"><div class="title">Agressivity</div><div class="input"><input class="range" title="agressivity"id="${this.id}-agressivity-range" type="range" min="50" max="150"><input class="number" type="number" id="${this.id}-agressivity-value"></div></div></div><div class="bottom-descriptor">The bigger the value is the more important its own successes become for algorythm compared to successes of the oponent.</div></div></div>`;
+            document.getElementById("player-configurations").append(playerConfiguration);
+        }
         setTimeout(function() {
             document.getElementById(`${this.id}-player-name-input`).value = this.name;
             this.setValueListeners();
@@ -77,7 +85,7 @@ class Player {
     updateDOMSize() {
         var animator = document.getElementById(`${this.position}-player-animator`);
         animator.style.opacity = 1;
-        animator.style.height = (getComputedStyle(document.getElementById(`${this.position}-player`)).height.replace("px", "")*1 + 65) + "px";
+        animator.style.height = (getComputedStyle(document.getElementById(`${this.position}-player`)).height.replace("px", "")*1 + 55) + "px";
     }
 
     setHue() {
@@ -120,6 +128,7 @@ class Player {
         document.getElementById(`${this.id}-player-name-input`).addEventListener("input", this.updateName.bind(this));
         document.getElementById(`${this.id}-symbol-button`).addEventListener("click", this.changeSymbol.bind(this));
         document.getElementById(`${this.id}-delete-player`).addEventListener("click", this.deletePlayer.bind(this));
+        document.getElementById(`${this.id}-configure-player`).addEventListener("click", openPlayerConfiguration.bind(null, this));
         document.getElementById(`${this.id}-move-player-up`).addEventListener("click", this.movePlayerIndex.bind(this, true));
         document.getElementById(`${this.id}-move-player-down`).addEventListener("click", this.movePlayerIndex.bind(this, false));
         setCurrentOptionValues();
@@ -151,9 +160,10 @@ class Player {
 
     updateName() {
         this.name = document.getElementById(`${this.id}-player-name-input`).value;
-        document.getElementById(`${this.id}-move-player-up`).setAttribute("title", `move player ${this.name} up`);
-        document.getElementById(`${this.id}-delete-player`).setAttribute("title", `delete player ${this.name}`);
-        document.getElementById(`${this.id}-move-player-down`).setAttribute("title", `move player ${this.name} down`);
+        document.getElementById(`${this.id}-move-player-up`).setAttribute("title", `Move player ${this.name} up`);
+        document.getElementById(`${this.id}-delete-player`).setAttribute("title", `Delete player ${this.name}`);
+        document.getElementById(`${this.id}-configure-player`).setAttribute("title", `Configure player ${this.name}`);
+        document.getElementById(`${this.id}-move-player-down`).setAttribute("title", `Move player ${this.name} down`);
         saveData();
         log(`name of player ${this.id} updated to ${this.name}`, 3);
     }
@@ -239,6 +249,7 @@ class Player {
         animator.style.opacity = 0;
         animator.style.height = 0;
         if (!indexSwitch) {
+            document.getElementById(`${this.id}-player-configuration`).remove();
             setTimeout(function() {
                 animator.remove();
             }, 250);
@@ -302,6 +313,43 @@ class Cell {
     }
 }
 
+function openPlayerConfiguration(player) {
+    playerConfigurationOpened = player;
+
+    const configurationWindow = document.getElementById("configure-player");
+    const playerConfiguration = document.getElementById(`${player.id}-player-configuration`);
+    const dimmer = document.getElementById("top-dimmer");
+
+    document.getElementById("close-player-configuration-button").style.backgroundColor = `hsl(var(--${player.id}-hue), var(--top-accent))`;
+    document.getElementById("close-player-configuration-svg").setAttribute("fill", `hsl(var(--${player.id}-hue), var(--back-accent))`);
+
+    dimmer.style.backgroundColor = `hsl(var(--${player.id}-hue), var(--dark-accent), 0.7)`;
+    dimmer.style.display = "block";
+    getComputedStyle(dimmer).opacity;
+    dimmer.style.opacity = 1;
+
+    playerConfiguration.style.display = "block";
+    configurationWindow.style.backgroundColor = `hsl(var(--${player.id}-hue), var(--back-accent))`;
+    configurationWindow.style.display = "block";
+    getComputedStyle(configurationWindow).opacity;
+    configurationWindow.style.transform = "translateY(0)";
+}
+
+function closePlayerConfiguration() {
+    const configurationWindow = document.getElementById("configure-player");
+    const playerConfiguration = document.getElementById(`${playerConfigurationOpened.id}-player-configuration`);
+    const dimmer = document.getElementById("top-dimmer");
+
+    dimmer.style.opacity = 0;
+    setTimeout(function() {
+        dimmer.style.display = "";
+        configurationWindow.style.display = "";
+        playerConfiguration.style.display = "";
+    }, 310);
+
+    configurationWindow.style.transform = "";
+}
+
 function stringToHTML(str) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(str, 'text/html');
@@ -315,6 +363,7 @@ configuration = {gridRows: 25, gridColumns: 15, borderPart: 0.20, showCellIndexe
 maxLogDepth = 0;
 cssVariables = document.querySelector(":root");
 expanded = {players: false};
+playerConfigurationOpened = null;
 menuOpened = false;
 menuStyle = null;
 mode = "play";
@@ -704,7 +753,7 @@ function resumeGame() {
     game.paused = false;
     playGridTransforms.translate = "0, 0";
     updateGridTransforms();
-    if (!turn.player.computer) {
+    if (!turn.player.computer && configuration.timerMinutes != 0) {
         turn.player.resumeTimer();
     }
     document.getElementById("game-paused").style.opacity = 0;
@@ -752,7 +801,9 @@ function startTurn(firstTurn = false) {
                 if (!firstTurn && configuration.timerMinutes != 0) {
                     pauseGame();
                 } else {
-                    turn.player.resumeTimer();
+                    if (configuration.timerMinutes != 0) {
+                        turn.player.resumeTimer();
+                    }
                     playGrid.style.pointerEvents = "";
                 }
             }
@@ -1079,7 +1130,7 @@ function getCellPoints(cell, playerId) {
                     }
                     if (cellPoints >= 30 && localMultiplier == multipliers[currentAxis]) {
                         multipliers[currentAxis] *= 125/configuration.winCombo**2;
-                        multipliers[currentAxis] *= Math.max(multipliers[verticalAxis]**0.70, 1);
+                        multipliers[currentAxis] *= Math.max(multipliers[verticalAxis]**0.75, 1);
                         localMultiplier = multipliers[currentAxis];
                         log(`increased global multiplier for ${currentAxis} to ${multipliers[currentAxis]}`, 5);
                         winCellMultiplier = Math.round(winCellMultiplier*(5.3/configuration.winCombo)*100)/100;
@@ -1189,12 +1240,10 @@ function restoreGame(data) {
 
 function rotateGame(reset = false) {
     let body = document.getElementsByTagName("body")[0];
-    if (!reset) {
-        if (body.style.transform != "" || reset) {
-            body.style.transform = "";
-        } else {
-            body.style.transform = "rotate(180deg)";
-        }
+    if (body.style.transform != "" || reset) {
+        body.style.transform = "";
+    } else {
+        body.style.transform = "rotate(180deg)";
     }
 }
 
@@ -1479,7 +1528,7 @@ function getRandomNumber(bottomIndex, topIndex) {
     return number === -0 ? 0 : number;
 }
 
-function openMenu() {
+function openMenu(temporarily = false) {
     const dimmer = document.getElementById("dimmer"), menuElement = document.getElementById("menu"), openSvg = document.getElementById("menu-fab-open-svg"), closeSvg = document.getElementById("menu-fab-close-svg");
 
     if (menuOpened) {
@@ -1495,7 +1544,9 @@ function openMenu() {
         setTimeout(function () {
             dimmer.style.display = "none";
             menuElement.style.display = "none";
-            // closeAllExpanders();
+            if (!temporarily) {
+                closeAllExpanders();
+            }
         }, 310);
         menuOpened = false;
         mode = "play";
@@ -1503,9 +1554,8 @@ function openMenu() {
         menuElement.style.display = "";
         getComputedStyle(menuElement).opacity;
         dimmer.style.display = "block";
-        setTimeout(function () {
-            dimmer.style.opacity = 1;
-        }, 10);
+        getComputedStyle(dimmer).opacity;
+        dimmer.style.opacity = 1;
         if (menuStyle == "bottom") {
             menuElement.style.transform = "translateY(calc(-100% + 9px)";
         } else {
@@ -1538,7 +1588,6 @@ function updateMenuStyle() {
         menuElement.style.width = "460px";
         menuElement.style.height = "100%";
         menuElement.style.borderTop = "";
-        menuElement.style.borderRight = "3px solid hsl(var(--hue), var(--top-accent))";
         menuStyle = "side";
     } else if ((innerWidth <= innerHeight || innerWidth <= 450) && menuStyle != "bottom") {
         menuElement.style.left = 0;
@@ -1547,13 +1596,12 @@ function updateMenuStyle() {
         menuElement.style.bottom = "";
         menuElement.style.width = "";
         menuElement.style.height = "calc(100% + 9px)";
-        menuElement.style.borderRight = "";
         menuElement.style.borderTop = "3px solid hsl(var(--hue), var(--top-accent))";
         menuStyle = "bottom";
     }
     if (previousStyle != menuStyle) {
         if (menuOpened) {
-            openMenu();
+            openMenu(true);
             menuForceClosed = true;
         }
     }
