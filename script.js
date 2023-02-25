@@ -300,7 +300,7 @@ class Cell {
 
     highlight(playerId) {
         this.element.style.backgroundColor = `hsl(var(--${playerId}-hue), var(--back-accent))`;
-        this.element.style.animation = "pulse 1500ms linear infinite";
+        this.element.style.animation = "pulse 1300ms linear infinite";
     }
 
     cancelHighlight() {
@@ -322,6 +322,7 @@ function openPlayerConfiguration(player) {
 
     document.getElementById("close-player-configuration-button").style.backgroundColor = `hsl(var(--${player.id}-hue), var(--top-accent))`;
     document.getElementById("close-player-configuration-svg").setAttribute("fill", `hsl(var(--${player.id}-hue), var(--back-accent))`);
+    document.getElementById("player-configuration-title").innerHTML = `${player.name} configuration`;
 
     dimmer.style.backgroundColor = `hsl(var(--${player.id}-hue), var(--dark-accent), 0.7)`;
     dimmer.style.display = "block";
@@ -665,7 +666,7 @@ function startNewGame(user = false) {
         grid.cells = createEmptyGridCells();
         writeGrid();
         resetPlayersStats();
-        initGame(true);
+        initGame();
     }
 }
 
@@ -701,7 +702,7 @@ function delayedClosePlayersExpander() {
     }, 600);
 }
 
-function initGame(newGame = false) {
+function initGame() {
     log("initiating game", 1);
     transitionPlayGrid();
     requestFunction(fitGridToView, 200, "updateGridTransforms");
@@ -716,7 +717,7 @@ function initGame(newGame = false) {
             gameEnd("combo", getWinCells(lastPlayer.lastCell));
         }
     } else {
-        startTurn(newGame);
+        startTurn(true);
     }
 }
 
@@ -1130,10 +1131,10 @@ function getCellPoints(cell, playerId) {
                     }
                     if (cellPoints >= 30 && localMultiplier == multipliers[currentAxis]) {
                         multipliers[currentAxis] *= 125/configuration.winCombo**2;
-                        multipliers[currentAxis] *= Math.max(multipliers[verticalAxis]**0.75, 1);
+                        multipliers[verticalAxis] *= (125/configuration.winCombo**2)*0.85;
                         localMultiplier = multipliers[currentAxis];
                         log(`increased global multiplier for ${currentAxis} to ${multipliers[currentAxis]}`, 5);
-                        winCellMultiplier = Math.round(winCellMultiplier*(5.3/configuration.winCombo)*100)/100;
+                        winCellMultiplier = Math.round(winCellMultiplier*(10/configuration.winCombo)*100)/100;
                         log(`increased winCell multiplier to ${winCellMultiplier}`, 5);
                     } else {
                         if (multipliers[currentAxis] > 1) {
@@ -1243,7 +1244,11 @@ function rotateGame(reset = false) {
     if (body.style.transform != "" || reset) {
         body.style.transform = "";
     } else {
-        body.style.transform = "rotate(180deg)";
+        if (getRandomNumber(0, 1)) {
+            body.style.transform = "rotate(180deg)";
+        } else {
+            body.style.transform = "rotate(-180deg)";
+        }
     }
 }
 

@@ -60,7 +60,7 @@ button {
     margin: 10px 16px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     background-color: hsl(var(--hue), var(--top-accent));
     border-radius: 9px;
@@ -456,32 +456,30 @@ input[type=number], input[type=text] {
     left: 0;
     margin: auto;
     max-width: 425px;
-    max-height: calc(100% - 80px);
-    width: calc(100% - 80px);
-    height: calc(100% - 80px);
+    width: calc(100% - 70px);
+    height: calc(100% - 70px);
     z-index: 8;
     border-radius: 9px;
     position: fixed;
     box-shadow: var(--shadow-positions) 6px var(--shadow-color);
     overflow: hidden;
     transform: translateY(calc(-100% - 100px));
-    transition: transform 300ms ease-in-out;
+    transition: transform 300ms cubic-bezier(.5,1.25,.55,1.05);
 }
 
 #player-configurations {
     padding: 14px;
-    height: calc(100% - 115px);
+    height: calc(100% - 132px);
     overflow-y: auto;
     overflow-x: hidden;
 }
 
 #close-player-configuration-button {
     position: absolute;
-    width: 55px;
-    height: 55px;
+    width: fit-content;
     left: 0;
     right: 0;
-    bottom: 15px;
+    bottom: 23px;
     margin: auto;
 }
 
