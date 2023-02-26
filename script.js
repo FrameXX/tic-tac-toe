@@ -66,7 +66,7 @@ class Player {
             document.getElementById("players").append(animator);
         }
         var symbol = getSymbolElementString(this.symbol, 35, this.id);
-        animator.innerHTML = `<div class="player" id="${this.position}-player" style="background-color: hsl(var(--${this.id}-hue), var(--back-accent)); border-color: hsl(var(--${this.id}-hue), var(--symbol-accent)); transition: none;"><div class="symbol-name"><button id="${this.id}-symbol-button" class="symbol-button" title="Change symbol" style="-webkit-tap-highlight-color: hsla(var(--${this.id}-hue), var(--symbol-accent), 20%); border-color: hsl(var(--${this.id}-hue), var(--top-accent));">${symbol}</button><input class="player-name-input" id="${this.id}-player-name-input" type="text" spellcheck="false"></div><div class="button-options"><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Move player ${this.name} up" id="${this.id}-move-player-up"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z"/></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Move player ${this.name} down" id="${this.id}-move-player-down"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Configure player ${this.name}" id="${this.id}-configure-player"><svg class="svg" xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"></path><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Delete player ${this.name}" id="${this.id}-delete-player"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.12 10.47L12 12.59l-2.13-2.12-1.41 1.41L10.59 14l-2.12 2.12 1.41 1.41L12 15.41l2.12 2.12 1.41-1.41L13.41 14l2.12-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9z"/></svg></button></div></div>`;
+        animator.innerHTML = `<div class="player" id="${this.position}-player" style="background-color: hsl(var(--${this.id}-hue), var(--back-accent)); border-color: hsl(var(--${this.id}-hue), var(--top-accent)); transition: none;"><div class="symbol-name"><button id="${this.id}-symbol-button" class="symbol-button" title="Change symbol" style="-webkit-tap-highlight-color: hsla(var(--${this.id}-hue), var(--symbol-accent), 20%); border-color: hsl(var(--${this.id}-hue), var(--top-accent));">${symbol}</button><input class="player-name-input" id="${this.id}-player-name-input" type="text" spellcheck="false"></div><div class="button-options"><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Move player ${this.name} up" id="${this.id}-move-player-up"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z"/></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Move player ${this.name} down" id="${this.id}-move-player-down"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Configure player ${this.name}" id="${this.id}-configure-player"><svg class="svg" xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"></path><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path></svg></button><button style="background-color: hsl(var(--${this.id}-hue), var(--top-accent))" title="Delete player ${this.name}" id="${this.id}-delete-player"><svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 0 24 24" width="35px" fill="hsl(var(--${this.id}-hue), var(--back-accent))"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.12 10.47L12 12.59l-2.13-2.12-1.41 1.41L10.59 14l-2.12 2.12 1.41 1.41L12 15.41l2.12 2.12 1.41-1.41L13.41 14l2.12-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9z"/></svg></button></div></div>`;
         animator.style.height = (getComputedStyle(document.getElementById(`${this.position}-player`)).height.replace("px", "")*1 + 45) + "px";
         if (newDOM) {
             const playerConfiguration = document.createElement("div");
@@ -331,6 +331,7 @@ function openPlayerConfiguration(player) {
 
     playerConfiguration.style.display = "block";
     configurationWindow.style.backgroundColor = `hsl(var(--${player.id}-hue), var(--back-accent))`;
+    configurationWindow.style.borderColor = `hsl(var(--${player.id}-hue), var(--top-accent))`;
     configurationWindow.style.display = "block";
     getComputedStyle(configurationWindow).opacity;
     configurationWindow.style.transform = "translateY(0)";
@@ -1537,30 +1538,35 @@ function openMenu(temporarily = false) {
     const dimmer = document.getElementById("dimmer"), menuElement = document.getElementById("menu"), openSvg = document.getElementById("menu-fab-open-svg"), closeSvg = document.getElementById("menu-fab-close-svg");
 
     if (menuOpened) {
+        menuOpened = false;
         menuElement.style.transform = "";
         closeSvg.style.opacity = 0;
         setTimeout(function () {
-            closeSvg.style.display = "none";
-            openSvg.style.display = "block";
-            getComputedStyle(openSvg).opacity;
-            openSvg.style.opacity = 1;
+            if (!menuOpened) {
+                closeSvg.style.display = "none";
+                openSvg.style.display = "block";
+                getComputedStyle(openSvg).opacity;
+                openSvg.style.opacity = 1;
+            }
         }, 160);
         dimmer.style.opacity = 0;
         setTimeout(function () {
-            dimmer.style.display = "none";
-            menuElement.style.display = "none";
-            if (!temporarily) {
-                closeAllExpanders();
+            if (!menuOpened) {
+                dimmer.style.display = "none";
+                menuElement.style.display = "none";
+                if (!temporarily) {
+                    closeAllExpanders();
+                }
             }
-        }, 310);
-        menuOpened = false;
+        }, 260);
         mode = "play";
     } else {
-        menuElement.style.display = "";
-        getComputedStyle(menuElement).opacity;
+        menuOpened = true;
         dimmer.style.display = "block";
         getComputedStyle(dimmer).opacity;
         dimmer.style.opacity = 1;
+        menuElement.style.display = "";
+        getComputedStyle(menuElement).opacity;
         if (menuStyle == "bottom") {
             menuElement.style.transform = "translateY(calc(-100% + 9px)";
         } else {
@@ -1568,15 +1574,14 @@ function openMenu(temporarily = false) {
         }
         openSvg.style.opacity = 0;
         setTimeout(function () {
-            openSvg.style.display = "none";
-            closeSvg.style.display = "block";
-            setTimeout(function () {
-                closeSvg.style.opacity = 1;
-            }, 10);
+            if (menuOpened) {
+                openSvg.style.display = "none";
+                closeSvg.style.display = "block";
+                setTimeout(function () {
+                    closeSvg.style.opacity = 1;
+                }, 10);
+            }
         }, 160);
-        setTimeout(function () {
-        }, 300);
-        menuOpened = true;
         mode = "menu";
     }
 }
