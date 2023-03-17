@@ -42,7 +42,7 @@ body {
     left: 0;
     margin: 0;
     overflow-y: hidden;
-    transition: transform 300ms ease-in-out;
+    transition: transform 200ms ease-in-out;
 }
 
 input {
@@ -317,6 +317,7 @@ input[type=number], input[type=text] {
 }
 
 .range-option .value .title {
+    text-align: left;
     padding-bottom: 8px;
 }
 
@@ -356,6 +357,13 @@ input[type=number], input[type=text] {
     flex-shrink: 0;
     width: 44px;
     text-align: left;
+}
+
+.descriptor {
+    font-style: italic;
+    font-size: 14px;
+    text-align: left;
+    padding: 12px;
 }
 
 .bottom-descriptor {
@@ -446,6 +454,24 @@ input[type=number], input[type=text] {
 
 .player-configuration {
     display: none;
+}
+
+#pause-game-container {
+    width: fit-content;
+    display: none;
+    transform: translateY(calc(-100% - 6px));
+    top: 0;
+    right: 0;
+    margin: auto;
+    border-color: hsl(var(--hue), var(--top-accent));
+    border-style: solid;
+    border-width: 0 0 3px 3px;
+    border-radius: 0 0 0 9px;
+    background-color: hsl(var(--hue), var(--back-accent));
+    z-index: 3;
+    position: fixed;
+    box-shadow: var(--shadow-positions) 6px var(--shadow-color);
+    transition: border-radious 200ms ease-in-out, border-width 200ms ease-in-out, transform 200ms ease-in-out;
 }
 
 #configure-player {
@@ -599,6 +625,9 @@ input[type=number], input[type=text] {
 }
 
 #menu {
+    border-color: hsl(var(--hue), var(--top-accent));
+    border-style: solid;
+    border-width: 0 3px 0 0;
     padding: 0 10px;
     overflow-y: auto;
     z-index: 2;

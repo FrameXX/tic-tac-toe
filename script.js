@@ -7,6 +7,7 @@ class Player {
         this.symbol = defaults.symbol;
         this.hue = defaults.hue;
         this.computer = defaults.computer;
+        this.neuralNetwork = defaults.neuralNetwork;
         this.mistakeRate = defaults.mistakeRate;
         this.agressivity = defaults.agressivity;
         this.lastCellCoords = defaults.lastCellCoords;
@@ -72,7 +73,7 @@ class Player {
             const playerConfiguration = document.createElement("div");
             playerConfiguration.id = `${this.id}-player-configuration`;
             playerConfiguration.setAttribute("class", "player-configuration");
-            playerConfiguration.innerHTML = `<div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><path d="M12,4.81L12,19c-3.31,0-6-2.63-6-5.87c0-1.56,0.62-3.03,1.75-4.14L12,4.81 M12,2L6.35,7.56l0,0C4.9,8.99,4,10.96,4,13.13 C4,17.48,7.58,21,12,21c4.42,0,8-3.52,8-7.87c0-2.17-0.9-4.14-2.35-5.57l0,0L12,2z"/></g></svg></div><div class="value"><div class="title">Hue</div><div class="input"><input class="range" title="hue"id="${this.id}-hue-range" type="range" min="0" max="360"><input class="number" type="number" id="${this.id}-hue-value"></div></div></div><div class="bottom-descriptor">Hue of the player and his symbol. Can be set from 0 to up to 360 degrees.</div><div class="check-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg></div><div class="value"><div class="title">Computer</div><div class="input"><input type="checkbox" title="computer" id="${this.id}-computer-check"></div></div></div><div class="bottom-descriptor">An algorythm will make decisions on where to place symbol instead of a player.</div><div id="${this.id}-computer-options-wrapper"><div id="${this.id}-computer-options"><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div><div class="value"><div class="title">Mistake rate</div><div class="input"><input class="range" title="mistake rate"id="${this.id}-mistake-rate-range" type="range" min="0" max="100"><input class="number" type="number" id="${this.id}-mistake-rate-value"></div></div></div><div class="bottom-descriptor">The bigger the value is the bigger is the chance of algorythm choosing not so optimal placement for its symbol.</div><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><g><rect fill="none" height="24" width="24"/></g><g><path d="M11,21h-1l1-7H7.5c-0.88,0-0.33-0.75-0.31-0.78C8.48,10.94,10.42,7.54,13.01,3h1l-1,7h3.51c0.4,0,0.62,0.19,0.4,0.66 C12.97,17.55,11,21,11,21z"/></g></svg></div><div class="value"><div class="title">Agressivity</div><div class="input"><input class="range" title="agressivity"id="${this.id}-agressivity-range" type="range" min="50" max="150"><input class="number" type="number" id="${this.id}-agressivity-value"></div></div></div><div class="bottom-descriptor">The bigger the value is the more important its own successes become for algorythm compared to successes of the oponent.</div></div></div>`;
+            playerConfiguration.innerHTML = `<div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><path d="M12,4.81L12,19c-3.31,0-6-2.63-6-5.87c0-1.56,0.62-3.03,1.75-4.14L12,4.81 M12,2L6.35,7.56l0,0C4.9,8.99,4,10.96,4,13.13 C4,17.48,7.58,21,12,21c4.42,0,8-3.52,8-7.87c0-2.17-0.9-4.14-2.35-5.57l0,0L12,2z"/></g></svg></div><div class="value"><div class="title">Hue</div><div class="input"><input class="range" title="hue"id="${this.id}-hue-range" type="range" min="0" max="360"><input class="number" type="number" id="${this.id}-hue-value"></div></div></div><div class="bottom-descriptor">Hue of the player and his symbol. Can be set from 0 to up to 360 degrees.</div><div class="check-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg></div><div class="value"><div class="title">Computer</div><div class="input"><input type="checkbox" title="Computer" id="${this.id}-computer-check"></div></div></div><div class="bottom-descriptor">An algorythm will make decisions on where to place symbol instead of a player.</div><div id="${this.id}-computer-options-wrapper"><div id="${this.id}-computer-options"><div class="check-option" style="display: none;"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><rect fill="none" height="24" width="24"/><path d="M22,11V3h-7v3H9V3H2v8h7V8h2v10h4v3h7v-8h-7v3h-2V8h2v3H22z M7,9H4V5h3V9z M17,15h3v4h-3V15z M17,5h3v4h-3V5z"/></svg></div><div class="value"><div class="title">Neural network</div><div class="input"><input type="checkbox" title="Neural network" id="${this.id}-neural-network-check"></div></div></div><div class="bottom-descriptor" style="display: none;">A trained neural network will be used to decide the most optimal placement for the symbol. If disabled a manually hardcoded algorythm will replace it.</div><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></div><div class="value"><div class="title">Mistake rate</div><div class="input"><input class="range" title="mistake rate"id="${this.id}-mistake-rate-range" type="range" min="0" max="100"><input class="number" type="number" id="${this.id}-mistake-rate-value"></div></div></div><div class="bottom-descriptor">The bigger the value is the bigger is the chance of algorythm choosing not so optimal placement for its symbol.</div><div class="range-option"><div class="icon"><svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="30px" viewBox="0 0 24 24" width="30px" fill=var(--text-color)><g><rect fill="none" height="24" width="24"/></g><g><path d="M11,21h-1l1-7H7.5c-0.88,0-0.33-0.75-0.31-0.78C8.48,10.94,10.42,7.54,13.01,3h1l-1,7h3.51c0.4,0,0.62,0.19,0.4,0.66 C12.97,17.55,11,21,11,21z"/></g></svg></div><div class="value"><div class="title">Agressivity</div><div class="input"><input class="range" title="agressivity"id="${this.id}-agressivity-range" type="range" min="50" max="150"><input class="number" type="number" id="${this.id}-agressivity-value"></div></div></div><div class="bottom-descriptor">The bigger the value is the more important its own successes become for algorythm compared to successes of the oponent.</div></div></div>`;
             document.getElementById("player-configurations").append(playerConfiguration);
         }
         setTimeout(function() {
@@ -119,10 +120,10 @@ class Player {
 
     setValueListeners() {
         log(`setting value listeners for player ${this.id}`, 2);
-        var rangeValuePairs = [{optionDOM: "hue", optionJS: "hue", multiplier: 1, player: this.id}, {optionDOM: "mistake-rate", optionJS: "mistakeRate", multiplier: 100, player: this.id}, {optionDOM: "agressivity", optionJS: "agressivity", multiplier: 100, player: this.id}];
+        const rangeValuePairs = [{optionDOM: "hue", optionJS: "hue", multiplier: 1, player: this.id}, {optionDOM: "mistake-rate", optionJS: "mistakeRate", multiplier: 100, player: this.id}, {optionDOM: "agressivity", optionJS: "agressivity", multiplier: 100, player: this.id}];
         assignRangeValueListeners(rangeValuePairs);
         optionRangeValuePairs = optionRangeValuePairs.concat(rangeValuePairs);
-        var checkboxes = [{optionDOM: "computer", optionJS: "computer", disablesOptions: {options: "computer", onValue: false}, player: this.id}];
+        const checkboxes = [{optionDOM: "computer", optionJS: "computer", disablesOptions: {options: "computer", onValue: false}, player: this.id}, {optionDOM: "neural-network", optionJS: "neuralNetwork", disablesOptions: {}, player: this.id}];
         assignCheckboxListeners(checkboxes);
         optionCheckboxes = optionCheckboxes.concat(checkboxes);
         document.getElementById(`${this.id}-player-name-input`).addEventListener("input", this.updateName.bind(this));
@@ -361,7 +362,7 @@ function stringToHTML(str) {
 // initiate global objects
 const soundEffects = {placeSymbol: new Howl({ src: ["audio/place-symbol.ogg"] }), removeSymbol: new Howl({ src: ["audio/remove-symbol.ogg"] })};
 navigator.touchscreen = matchMedia("(pointer: coarse)").matches;
-configuration = {gridRows: 25, gridColumns: 15, borderPart: 0.20, showCellIndexes: false, optimalCellSize: 30 , autoGridSizes: true, winCombo: 5, rotateGrid: true, theme: "auto", confirmTurn: "touchscreen", playedGames: {}, soundEffects: true, symbolsPerTurn: 1, timerMinutes: 0, rotateOnTurn: false};
+configuration = {gridRows: 25, gridColumns: 15, borderPart: 0.20, showCellIndexes: false, optimalCellSize: 30 , autoGridSizes: true, winCombo: 5, rotateGrid: true, theme: "auto", confirmTurn: "touchscreen", playedGames: {}, soundEffects: true, symbolsPerTurn: 1, timerMinutes: 0, rotateOnTurn: false, artifWait: 1200};
 maxLogDepth = 0;
 cssVariables = document.querySelector(":root");
 expanded = {players: false};
@@ -417,17 +418,17 @@ function updatePlayerDOMSizes() {
     }
 }
 
-optionRangeValuePairs = [{ optionDOM: "grid-rows", optionJS: "gridRows", multiplier: 1, player: null}, { optionDOM: "grid-columns", optionJS: "gridColumns", multiplier: 1, player: null}, { optionDOM: "border-part", optionJS: "borderPart", multiplier: 100, player: null}, { optionDOM: "optimal-cell-size", optionJS: "optimalCellSize", multiplier: 1, player: null }, { optionDOM: "win-combo", optionJS: "winCombo", multiplier: 1, player: null }, { optionDOM: "symbols-per-turn", optionJS: "symbolsPerTurn", multiplier: 1, player: null }, { optionDOM: "timer-minutes", optionJS: "timerMinutes", multiplier: 1, player: null }];
-assignRangeValueListeners(optionRangeValuePairs);
-
 function addNewPlayer(first = false, computer = false) {
     const id = getRandomId(4);
     const position = playersOrder.length;
-    players[id] = new Player({id: id, position: position, name: `Player ${position + 1}`, symbol: Object.keys(symbols)[getTotalIndex(position, Object.keys(symbols))], hue: Object.values(hues)[getTotalIndex(position, Object.values(hues))], computer: computer, mistakeRate: 0.2, agressivity: 1, lastCellCoords: null, timer: {running: false, seconds: 0, interval: null, lastTimeStamp: null}, suspended: false});
+    players[id] = new Player({id: id, position: position, name: `Player ${position + 1}`, symbol: Object.keys(symbols)[getTotalIndex(position, Object.keys(symbols))], hue: Object.values(hues)[getTotalIndex(position, Object.values(hues))], computer: computer, mistakeRate: 0.2, agressivity: 1, lastCellCoords: null, timer: {running: false, seconds: 0, interval: null, lastTimeStamp: null}, suspended: false, neuralNetwork: false});
     if (!first) {
         saveData();
     }
 }
+
+optionRangeValuePairs = [{ optionDOM: "grid-rows", optionJS: "gridRows", multiplier: 1, player: null}, { optionDOM: "grid-columns", optionJS: "gridColumns", multiplier: 1, player: null}, { optionDOM: "border-part", optionJS: "borderPart", multiplier: 100, player: null}, { optionDOM: "optimal-cell-size", optionJS: "optimalCellSize", multiplier: 1, player: null }, { optionDOM: "win-combo", optionJS: "winCombo", multiplier: 1, player: null }, { optionDOM: "symbols-per-turn", optionJS: "symbolsPerTurn", multiplier: 1, player: null }, { optionDOM: "timer-minutes", optionJS: "timerMinutes", multiplier: 1, player: null }, { optionDOM: "artif-wait", optionJS: "artifWait", multiplier: 1, player: null }];
+assignRangeValueListeners(optionRangeValuePairs);
 
 function assignRangeValueListeners(pairs) {
     log("assigning range-value listeners", 3);
@@ -654,7 +655,7 @@ function startNewGame(user = false) {
                 resumeGame();
             }
         }
-        grid = {rotated: false, cellSize: configuration.optimalCellSize, cells: []}
+        grid = {rotated: false, flipped: false, cellSize: configuration.optimalCellSize, cells: []}
         game = {turn: 0, won: null, wonType: null, playing: playersOrder[0], id: getRandomId(4), paused: false};
         if (configuration.autoGridSizes) {
             gridCounts = getOptimalGridCounts()
@@ -703,6 +704,29 @@ function delayedClosePlayersExpander() {
     }, 600);
 }
 
+function showPauseGame(show) {
+    const pauseGameElement = document.getElementById("pause-game-container");
+    if (show) {
+        pauseGameElement.style.display = "block";
+        getComputedStyle(pauseGameElement).opacity;
+        pauseGameElement.style.transform = "translateY(0%)";
+        if (menuStyle == "side") {
+            pauseGameElement.style.left = "";
+            pauseGameElement.style.borderWidth = "0 0 3px 3px";
+            pauseGameElement.style.borderRadius = "0 0 0 9px";
+        } else {
+            pauseGameElement.style.left = 0;
+            pauseGameElement.style.borderWidth = "0 3px 3px 3px";
+            pauseGameElement.style.borderRadius = "0 0 9px 9px";
+        }
+    } else {
+        pauseGameElement.style.transform = "translateY(calc(-100% - 6px))";
+        setTimeout(function() {
+            pauseGameElement.style.display = "none";
+        }, 210);
+    }
+}
+
 function initGame() {
     log("initiating game", 1);
     transitionPlayGrid();
@@ -731,6 +755,7 @@ function getDigits(number, digitsCount = 2) {
 }
 
 function pauseGame() {
+    showPauseGame(false);
     playGrid.style.pointerEvents = "none";
     document.getElementById("game-paused").style.opacity = "";
     document.getElementById("game-paused").style.display = "block";
@@ -760,7 +785,9 @@ function resumeGame() {
     }
     document.getElementById("game-paused").style.opacity = 0;
     setTimeout(function() {
-        document.getElementById("game-paused").style.display = "";
+        if (!game.paused) {
+            document.getElementById("game-paused").style.display = "";
+        }
     }, 210);
 }
 
@@ -787,20 +814,20 @@ function startTurn(firstTurn = false) {
             if (turn.player.computer) {
                 playGrid.style.pointerEvents = "none";
                 let moves = buildMoves(turn.playerId);
+                let mistake = getRandomNumber(1, 1/turn.player.mistakeRate**2) == 1, chosenCell;
+                if (mistake) {
+                    log("computer player made a mistake", 2);
+                    turn.chosenCell = moves[Math.round(getRandomNumber(1, Math.max(1, turn.player.mistakeRate*3.5)))].cell;
+                } else {
+                    turn.chosenCell = moves[0].cell;
+                }
                 setTimeout(function(fromGame) {
                     if (fromGame.id == game.id) {
-                        let mistake = getRandomNumber(1, 1/turn.player.mistakeRate**2) == 1, chosenCell;
-                        if (mistake) {
-                            log("computer player made a mistake", 2);
-                            turn.chosenCell = moves[Math.round(getRandomNumber(1, Math.max(1, turn.player.mistakeRate*3.5)))].cell;
-                        } else {
-                            turn.chosenCell = moves[0].cell;
-                        }
                         applyTurn();
                     }
-                }.bind(null, structuredClone(game)), getRandomNumber(800, 1600));
+                }.bind(null, structuredClone(game)), getRandomNumber(Math.round(configuration.artifWait - (configuration.artifWait * 0.25)), Math.round(configuration.artifWait + (configuration.artifWait * 0.25))));
             } else {
-                if (!firstTurn && configuration.timerMinutes != 0) {
+                if (configuration.timerMinutes != 0) {
                     pauseGame();
                 } else {
                     if (configuration.timerMinutes != 0) {
@@ -957,7 +984,7 @@ function buildMoves(playerId) {
     moves = [];
     moveCells = getEmptyGridCells();
     for (const cell of moveCells) {
-        moves.push({cell: cell, points: getAllCellPoints(cell, playerId)});
+        moves.push({cell: cell, points: getCellPoints(cell, playerId)});
     }
     log(moves, 4);
     return moves.sort(compareMoves);
@@ -995,13 +1022,21 @@ function getEmptyGridCells() {
     return cells;
 }
 
-function getAllCellPoints(cell, playerId) {
-    const playerPoints = getCellPoints(cell, playerId);
+function getCellPoints(cell, playerId) {
+    let playerPoints = 0, opponentsPoints = 0;
+    if (turn.player.neuralNetwork) {
+        playerPoints = generateCellPoints(cell, playerId);
+    } else {
+        playerPoints = countCellPoints(cell, playerId);
+    }
     log(`cell points in cell ${cell.row}, ${cell.column} are ${playerPoints} for ${playerId}`, 4);
-    let opponentsPoints = 0;
     for (const opponentId of playersOrder) {
         if (opponentId != playerId) {
-            opponentsPoints += getCellPoints(cell, opponentId);
+            if (turn.player.neuralNetwork) {
+                opponentsPoints += generateCellPoints(cell, opponentId);
+            } else {
+                opponentsPoints += countCellPoints(cell, opponentId);
+            }
             log(`cell points in cell ${cell.row}, ${cell.column} are ${opponentsPoints} for ${opponentId}`, 4);
         }
     }
@@ -1087,7 +1122,11 @@ function checkCellComboOrder(winCells) {
     return rows.every((row, index) => row == order[index]) || columns.every((column, index) => column == order[index]);
 }
 
-function getCellPoints(cell, playerId) {
+function generateCellPoints(cell, playerId) {
+    
+}
+
+function countCellPoints(cell, playerId) {
     log(`getting cell points in cell ${cell.row}, ${cell.column} for ${playerId}`, 5);
     let points = 0, multipliers = {axis0: 1, axis45: 1, axis90: 1, axis135: 1}, row, column, inferiority, currentAxis, cellPoints, addPoints, localMultiplier, winCellMultiplier, pointsBefore, axis;
 
@@ -1244,13 +1283,26 @@ function rotateGame(reset = false) {
     let body = document.getElementsByTagName("body")[0];
     if (body.style.transform != "" || reset) {
         body.style.transform = "";
+        if (grid.rotated) {
+            playGridTransforms.rotate = "90deg";
+        } else {
+            playGridTransforms.rotate = "0deg";
+        }
+        grid.flipped = false;
     } else {
         if (getRandomNumber(0, 1)) {
             body.style.transform = "rotate(180deg)";
         } else {
             body.style.transform = "rotate(-180deg)";
         }
+        if (grid.rotated) {
+            playGridTransforms.rotate = "270deg";
+        } else {
+            playGridTransforms.rotate = "180deg";
+        }
+        grid.flipped = true;
     }
+    updateGridTransforms();
 }
 
 function log(message, depth) {
@@ -1356,7 +1408,9 @@ function expandPart(expanderId) {
         document.getElementById(`expand-${expanderId}-caret`).style.transform = "scaleY(-100%";
         document.getElementById(`expand-${expanderId}-animator`).style.height = (getComputedStyle(expandContent).height.replace("px", "")*1) + 5 + "px";
         expandCompleteTimeout = setTimeout(function () {
-            document.getElementById(`expand-${expanderId}-animator`).style.height = (getComputedStyle(expandContent).height.replace("px", "")*1) + 5 + "px";
+            if (expanded[expanderId]) {
+                document.getElementById(`expand-${expanderId}-animator`).style.height = (getComputedStyle(expandContent).height.replace("px", "")*1) + 5 + "px";
+            }
         }, 200);
         if (expanderId == "players") {
             updatePlayerDOMSizes();
@@ -1367,7 +1421,9 @@ function expandPart(expanderId) {
         document.getElementById(`expand-${expanderId}-animator`).style.removeProperty("height");
         clearTimeout(expandCompleteTimeout);
         setTimeout(function () {
-            expandContent.style.display = "none";
+            if (!expanded[expanderId]) {
+                expandContent.style.display = "none";
+            }
         }, 210);
     }
 }
@@ -1421,7 +1477,7 @@ function fitGridToView() {
     let gridRatio = gridWidth/gridHeight;
     const gridRatioReversed = gridHeight/gridWidth;
     const windowRatio = windowWidth/windowHeight;
-    let gridScale, gridRotation;
+    let gridScale;
     if (Math.abs(gridRatio - windowRatio) > Math.abs(gridRatioReversed - windowRatio) && configuration.rotateGrid) {
         grid.rotated = true;
         [gridHeight, gridWidth] = [gridWidth, gridHeight];
@@ -1437,12 +1493,20 @@ function fitGridToView() {
         gridScale = windowHeight/gridHeight;
     }
     if (grid.rotated) {
-        playGridTransforms.rotate = "90deg";
+        if (grid.flipped) {
+            playGridTransforms.rotate = "270deg";
+        } else {
+            playGridTransforms.rotate = "90deg";
+        }
         if (game.paused) {
             playGridTransforms.translate = "-100%, 0";
         }
     } else {
-        playGridTransforms.rotate = 0;
+        if (grid.flipped) {
+            playGridTransforms.rotate = "180deg";
+        } else {
+            playGridTransforms.rotate = "0deg";
+        }
         if (game.paused) {
             playGridTransforms.translate = "0, -100%";
         }
@@ -1472,7 +1536,7 @@ function writeGrid() {
             cellElement.title = `Cell ${row + 1}, ${column + 1}`;
             cellElement.onclick = playerPlaceSymbol.bind(null, row, column);
             rowElement.appendChild(cellElement);
-            cellElement.innerHTML = `<div class="cell-index">${row},${column}</div>`;
+            cellElement.innerHTML = `<div class="cell-index">${row};${column}</div>`;
         }
     }
 }
@@ -1539,6 +1603,7 @@ function openMenu(temporarily = false) {
 
     if (menuOpened) {
         menuOpened = false;
+        showPauseGame(false);
         menuElement.style.transform = "";
         closeSvg.style.opacity = 0;
         setTimeout(function () {
@@ -1562,6 +1627,9 @@ function openMenu(temporarily = false) {
         mode = "play";
     } else {
         menuOpened = true;
+        if (configuration.timerMinutes != 0 && !game.paused) {
+            showPauseGame(true);
+        }
         dimmer.style.display = "block";
         getComputedStyle(dimmer).opacity;
         dimmer.style.opacity = 1;
@@ -1598,6 +1666,7 @@ function updateMenuStyle() {
         menuElement.style.width = "460px";
         menuElement.style.height = "100%";
         menuElement.style.borderTop = "";
+        menuElement.style.borderWidth = "0 3px 0 0";
         menuStyle = "side";
     } else if ((innerWidth <= innerHeight || innerWidth <= 450) && menuStyle != "bottom") {
         menuElement.style.left = 0;
@@ -1607,6 +1676,7 @@ function updateMenuStyle() {
         menuElement.style.width = "";
         menuElement.style.height = "calc(100% + 9px)";
         menuElement.style.borderTop = "3px solid hsl(var(--hue), var(--top-accent))";
+        menuElement.style.borderWidth = "0";
         menuStyle = "bottom";
     }
     if (previousStyle != menuStyle) {
