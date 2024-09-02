@@ -1,6 +1,4 @@
-# <img src="https://jiri-kral.web.app/tic-tac-toe/favicon.png" alt="logo" height="38px"/> Tic Tac Toe
-
-Currently availible on [https://jiri-kral.web.app/tic-tac-toe/index.html](https://jiri-kral.web.app/tic-tac-toe/index.html).
+# <img src="favicon.png" alt="logo" height="38px"/> Tic Tac Toe
 
 This is a Tic Tac Toe game as everyone knows it with a bit of customisation. You can set your own number of symbols in 1 line that a player needs to win (win combo) and you can also play against more than 1 player, which can be either another person or a computer.
 
